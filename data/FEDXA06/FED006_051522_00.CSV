@@ -1,0 +1,7 @@
+MM:DD:YYYY hh:mm:ss,Library_Version,Session_type,Device_Number,Battery_Voltage,Motor_Turns,FR,Event,Active_Poke,Left_Poke_Count,Right_Poke_Count,Pellet_Count,Block_Pellet_Count,Retrieval_Time,InterPelletInterval,Poke_Time
+5/15/2022 12:27:19,1.12.0,ClosedEcon_PR1,6,3.65,nan,1,Left,Left,1,0,0,0,nan,nan,0.02
+5/15/2022 12:29:32,1.12.0,ClosedEcon_PR1,6,3.64,14,1,Pellet,Left,1,0,1,1,Timed_out,nan,nan
+5/15/2022 12:35:40,1.12.0,ClosedEcon_PR1,6,3.65,nan,3,Right,Left,1,1,1,1,nan,nan,0.45
+5/15/2022 12:37:40,1.12.0,ClosedEcon_PR1,6,3.64,nan,3,Left,Left,2,1,1,1,nan,nan,0.00
+5/15/2022 12:37:42,1.12.0,ClosedEcon_PR1,6,3.65,nan,3,Left,Left,3,1,1,1,nan,nan,0.02
+5/15/2022 12:37:44,1.12.0,ClosedEcon_PR1,6,3.64,nan,3,Left,Left,4,1,1,1,nan,nan,0.02

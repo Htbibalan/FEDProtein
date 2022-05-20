@@ -1,0 +1,11 @@
+MM:DD:YYYY hh:mm:ss,Library_Version,Session_type,Device_Number,Battery_Voltage,Motor_Turns,FR,Event,Active_Poke,Left_Poke_Count,Right_Poke_Count,Pellet_Count,Block_Pellet_Count,Retrieval_Time,InterPelletInterval,Poke_Time
+4/21/2022 8:46:11,1.12.0,Free_feed,11,3.87,3,0,Pellet,Left,0,0,1,0,Timed_out,nan,nan
+4/21/2022 8:47:47,1.12.0,Free_feed,11,3.88,1,0,Pellet,Left,0,0,2,0,Timed_out,96,nan
+4/21/2022 8:50:40,1.12.0,Free_feed,11,3.89,1,0,Pellet,Left,0,0,3,0,Timed_out,173,nan
+4/21/2022 8:52:01,1.12.0,Free_feed,11,3.88,1,0,Pellet,Left,0,0,4,0,Timed_out,81,nan
+4/21/2022 8:54:45,1.12.0,Free_feed,11,3.88,1,0,Pellet,Left,0,0,5,0,Timed_out,164,nan
+4/21/2022 8:56:04,1.12.0,Free_feed,11,3.89,1,0,Pellet,Left,0,0,6,0,Timed_out,79,nan
+4/21/2022 8:58:03,1.12.0,Free_feed,11,3.88,1,0,Pellet,Left,0,0,7,0,Timed_out,119,nan
+4/21/2022 8:59:43,1.12.0,Free_feed,11,3.88,2,0,Pellet,Left,0,0,8,0,Timed_out,100,nan
+4/21/2022 9:01:02,1.12.0,Free_feed,11,3.88,1,0,Pellet,Left,0,0,9,0,Timed_out,79,nan
+4/21/2022 9:24:42,1.12.0,Free_feed,11,3.87,1,0,Pellet,Left,0,0,10,0,Timed_out,1420,nan
