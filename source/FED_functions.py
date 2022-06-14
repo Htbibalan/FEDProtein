@@ -134,7 +134,43 @@ for key in mice.keys():
 
 
 # %%
+# add meal parameters to dictionary
 
+def get_intermealinterval (pellettimes):
+    IPIs = np.diff(pellettimes)
+    IMI= np.mean([x for x in IPIs if x > (1/60)])
+    return IMI
+
+def get_mealsize(pellettimes):
+    """
+    calculates meal size from times of pellets
+    parameters 
+    ----------
+    pellettimes : list of floats
+        timestamps of pellet deliveries
+
+    returns
+    --------
+    mealsize : float 
+        mean size of meal in pellets 
+    """
+    npellets = len(pellettimes)
+    IPIs = np.diff(pellettimes)
+    nmeals = len([idx for idx, val in enumerate(IPIs) if val > 1/60])
+    mealsize = npellets/nmeals
+
+    return mealsize
+
+for key in mice.keys():
+    pr_timestamps = mice[key]["pr_timestamps"]
+    mice[key]["intermeal_interval_pr"] = get_intermealinterval(pr_timestamps)
+    mice[key]["mealsize_pr"] = get_mealsize(pr_timestamps)
+
+    nr_timestamps = mice[key]["nr_timestamps"]
+    mice[key]["intermeal_interval_nr"] = get_intermealinterval(nr_timestamps)
+    mice[key]["mealsize_nr"] = get_mealsize(nr_timestamps)
+    
+# %%
 
 """
 make dictionary for each mouse with the following fields:
