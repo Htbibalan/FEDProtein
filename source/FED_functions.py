@@ -51,7 +51,7 @@ def get_intermealinterval (pellettimes):
 #%%
 
 # function to get timestamps from fed csv files
-metafile = "..\\FEDXA DATA SHEETS METAFILE .xls"
+metafile = "..\\FEDXA DATA SHEETS METAFILE.xls"
 rows, header = tp.metafilereader(metafile, sheetname="METAFILE")
 
 mice = {}
@@ -59,15 +59,13 @@ for row in rows:
     mouse_id = row[1]
     if mouse_id not in mice.keys():
         mice[mouse_id] = {}
+        mice[mouse_id]["sex"] = row[4]
+        mice[mouse_id]["order"] = row[5]
 
 for key in mice.keys():
     for row in rows:
-        if "sex" not in mice[key].keys():
-            mice[key]["sex"] = row[4]
-            mice[key]["order"] = row[5]
-
         if row[1] == key and row[3] == "FF":
-            filename = "..\\data\\{}\\{}".format(row[1], row[0])
+            filename = "..\\data\\{}".format(row[0])
             if row[2] == "GRAIN":
                 mice[key]["grain_timestamps"] = get_FEDevents(filename, "Pellet")
             elif row[2] == "PR":
@@ -80,7 +78,7 @@ for key in mice.keys():
 
 # %%
 ## gets bodyweights and adds to dictionary
-metafile = "..\\FEDXA DATA SHEETS METAFILE .xls"
+metafile = "..\\FEDXA DATA SHEETS METAFILE.xls"
 rows, header = tp.metafilereader(metafile, sheetname="METAFILE_BW")
 
 n_days = len(rows[0])
@@ -91,7 +89,7 @@ for row in rows:
 
 # %%
 ## gets hoarded pellets and adds to dictionary
-metafile = "..\\FEDXA DATA SHEETS METAFILE .xls"
+metafile = "..\\FEDXA DATA SHEETS METAFILE.xls"
 rows, header = tp.metafilereader(metafile, sheetname="METAFILE_HO")
 
 n_days = len(rows[0])
@@ -109,8 +107,34 @@ for key in mice.keys():
 
 # %%
 # 
-def get_pellets_per_day(timestamps, start_time=4):
-    print("will divide pellets up into the number per day")
+def get_pellets_per_day(timestamps, start_time=4, days=7):
+    pellets_per_day = []
+    for day in range(days):
+        pellets = [t for t in timestamps if (t>day*24) and (t<(day+1)*24)]
+        n_pellets = len(pellets)
+        pellets_per_day.append(n_pellets)
+
+    return pellets_per_day
+
+for key in mice.keys():
+    mice[key]["grain_pellets_per_day"] = get_pellets_per_day(mice[key]["grain_timestamps"], days=3)
+    mice[key]["pr_pellets_per_day"] = get_pellets_per_day(mice[key]["pr_timestamps"])
+    mice[key]["nr_pellets_per_day"] = get_pellets_per_day(mice[key]["nr_timestamps"])
+
+# %%
+# assemble pellets per day for whole timecourse
+for key in mice.keys():
+    if mice[key]["order"] == 2:
+        mice[key]["all_pellets_per_day"] = mice[key]["grain_pellets_per_day"] + \
+            mice[key]["pr_pellets_per_day"] + mice[key]["nr_pellets_per_day"]
+    else:
+                mice[key]["all_pellets_per_day"] = mice[key]["grain_pellets_per_day"] + \
+                    mice[key]["nr_pellets_per_day"] + mice[key]["pr_pellets_per_day"]
+
+
+
+# %%
+
 
 """
 make dictionary for each mouse with the following fields:
@@ -121,9 +145,9 @@ make dictionary for each mouse with the following fields:
     # grain_timestamps
     # pr_timestamps
     # nr_timestamps
-    grain_pellets_per_day
-    pr_pellets_per_day
-    nr_pellets_per_day
+    # grain_pellets_per_day
+    # pr_pellets_per_day
+    # nr_pellets_per_day
 
     pr_intermeal_interval
     nr_intermeal_interval
