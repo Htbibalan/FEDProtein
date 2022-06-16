@@ -44,6 +44,45 @@ def get_FEDevents(filename, eventname):
 
     return pellettimes
 
+def get_data_subset(dictionary, selectors, verbose=True):
+
+    output_dictionary = dictionary.copy()
+    for key, value in selectors.items():
+        for mouse_id in dictionary.keys():
+            try:
+                if output_dictionary[mouse_id][key] != value:
+                    output_dictionary.pop(mouse_id)
+            except KeyError: pass
+
+    if verbose:
+        print("{} items in output dictionary".format(len(output_dictionary.keys())))
+    
+    return output_dictionary
+
+def get_data_fields(dictionary, fields, selectors):
+
+    output_list = []
+    reduced_dictionary = get_data_subset(dictionary, selectors)
+    
+    if len(reduced_dictionary.keys()) > 0:
+
+        for field in fields:
+            output_sublist =[]
+            try:
+                for key in reduced_dictionary.keys():
+                    output_sublist.append(reduced_dictionary[key][field])
+            except KeyError:
+                print("{} is not a key in selected dictionary".format(field))
+                return
+            output_list.append(output_sublist)
+    else:
+        print("No data in fields in selected dictionary")
+
+    if len(output_list) == 1:
+        output_list = output_list[0]
+        
+    return output_list
+
 def get_intermealinterval (pellettimes):
     IPIs = np.diff(pellettimes)
     IMI= np.mean([x for x in IPIs if x > (1/60)])
