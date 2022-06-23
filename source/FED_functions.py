@@ -175,6 +175,10 @@ for key in mice.keys():
 # %%
 # add meal parameters to dictionary
 
+def get_interpellet_intervals(pellettimes):
+    IPIs = np.diff(pellettimes)
+    return IPIs
+
 def get_intermealinterval (pellettimes):
     IPIs = np.diff(pellettimes)
     IMI= np.mean([x for x in IPIs if x > (1/60)])
@@ -202,10 +206,12 @@ def get_mealsize(pellettimes):
 
 for key in mice.keys():
     pr_timestamps = mice[key]["pr_timestamps"]
+    mice[key]["interpellet_intervals_pr"] = get_interpellet_intervals(pr_timestamps)
     mice[key]["intermeal_interval_pr"] = get_intermealinterval(pr_timestamps)
     mice[key]["mealsize_pr"] = get_mealsize(pr_timestamps)
 
     nr_timestamps = mice[key]["nr_timestamps"]
+    mice[key]["interpellet_intervals_nr"] = get_interpellet_intervals(nr_timestamps)
     mice[key]["intermeal_interval_nr"] = get_intermealinterval(nr_timestamps)
     mice[key]["mealsize_nr"] = get_mealsize(nr_timestamps)
     
