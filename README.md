@@ -7,7 +7,7 @@
 ### Age: 6-8 weeks old at the time of arrival.
 ### strain: C57BL/6NRj
 
-![paradigm](C:/Users\hta031\Github\FEDProtein\source\paradigm.png)
+![paradigm](https://github.com/Htbibalan/FEDProtein/blob/BNA/source/paradigm.png)
 
 
 
