@@ -41,7 +41,7 @@
 * **/source** contains function.py files plus Excel sheets for the two cohorts, i.e. the data collected manually and daily by the experimenter
 * **/stats** mainly stores statistical analysis in JASP format
 
-**Look at ***FEDPRotein_METAFILE*** to have an overview of the files attributed to each animal, this files also contains bodyweight and hoarding data.** 
+**Look at [Metafile](https://github.com/Htbibalan/FEDProtein/blob/BNA/FEDProtein_METAFILE.xls) to have an overview of the files attributed to each animal, this files also contains bodyweight and hoarding data.** 
 
 ***note:*** you can find the data collected maually for each individual mouse in the folder **/source** 
 
