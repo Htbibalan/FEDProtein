@@ -7,7 +7,7 @@
 #### Age: 6-8 weeks old at the time of arrival.
 #### strain: C57BL/6NRj
 
-![paradigm](https://github.com/Htbibalan/FEDProtein/blob/BNA/source/paradigm.png)
+![paradigm](https://github.com/Htbibalan/FEDProtein/blob/main/source/paradigm.png)
 *This figure shows the paradigm of the experiment, however it is not fully accurate for the two cohorts, i.e FEDXA and FEDXB, but basically mice start with 3 days of training when they receive grain pellets from FEDs, then they switch to either PR or NR diets and are maintained on the diet for 7 days, after that they swtich to the other diet(NR--> PR and PR--> NR and) and are maintained on the new diet for another 7 days*
 
 
