@@ -44,6 +44,11 @@ def get_FEDevents(filename, eventname):
 
     return pellettimes
 
+
+
+
+
+
 def get_data_subset(dictionary, selectors, verbose=True):
 
     output_dictionary = dictionary.copy()
@@ -90,7 +95,7 @@ def get_intermealinterval (pellettimes):
 #%%
 
 # function to get timestamps from fed csv files
-metafile = "..\\FEDXA DATA SHEETS METAFILE.xls"
+metafile = "..\\FEDProtein_METAFILE.xls"
 rows, header = tp.metafilereader(metafile, sheetname="METAFILE")
 
 mice = {}
@@ -98,6 +103,7 @@ for row in rows:
     mouse_id = row[1]
     if mouse_id not in mice.keys():
         mice[mouse_id] = {}
+        mice[mouse_id]["mode"] = row[3]
         mice[mouse_id]["sex"] = row[4]
         mice[mouse_id]["order"] = row[5]
 
@@ -115,10 +121,12 @@ for key in mice.keys():
                 print(row[2], "is not a valid type of pellet for", key)
 
 
+
+
 # %%
 ## gets bodyweights and adds to dictionary
-metafile = "..\\FEDXA DATA SHEETS METAFILE.xls"
-rows, header = tp.metafilereader(metafile, sheetname="METAFILE_BW")
+metafile = "..\\FEDProtein_METAFILE.xls"
+rows, header = tp.metafilereader(metafile, sheetname="BODYWEIGHT")
 
 n_days = len(rows[0])
 
@@ -128,8 +136,8 @@ for row in rows:
 
 # %%
 ## gets hoarded pellets and adds to dictionary
-metafile = "..\\FEDXA DATA SHEETS METAFILE.xls"
-rows, header = tp.metafilereader(metafile, sheetname="METAFILE_HO")
+metafile = "..\\FEDProtein_METAFILE.xls"
+rows, header = tp.metafilereader(metafile, sheetname="HOARDING")
 
 n_days = len(rows[0])
 
