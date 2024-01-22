@@ -4,9 +4,9 @@
 ## This repository contains data files and scripts for analysis of data collected during FEDXA and FEDXB experiments.
 
 #### FEDXA includes 12 male mice and FEDXB 12 female mice.
-#### Age: 6-8 weeks old at the time of arrival.8-10 weeks old at the beginning of the experiment
+#### Age: 6-8 weeks old at the time of arrival.8-10 weeks old at the beginning of the experiment.
 #### strain: C57BL/6NRj
-####Date : 23 April- 17 May 2022 (FEDXA) and 2 June- 19 June 2022(FEDXB)
+#### Date : 23 April- 17 May 2022 (FEDXA) and 2 June- 19 June 2022(FEDXB)
 ![paradigm](https://github.com/Htbibalan/FEDProtein/blob/main/source/paradigm.png)
 *This figure shows the paradigm of the experiment, however it is not fully accurate for the two cohorts, i.e FEDXA and FEDXB, but basically mice start with 3 days of training when they receive grain pellets from FEDs, then they switch to either PR or NR diets and are maintained on the diet for 7 days, after that they switch to the other diet(NR--> PR and PR--> NR and) and are maintained on the new diet for another 7 days*
 
