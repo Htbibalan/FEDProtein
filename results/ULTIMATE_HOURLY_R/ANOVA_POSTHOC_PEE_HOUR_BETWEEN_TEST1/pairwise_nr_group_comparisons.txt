@@ -1,0 +1,11 @@
+
+	Pairwise comparisons using t tests with pooled SD 
+
+data:  combined_data$nr_hourly_pellet_intake and combined_data$group 
+
+               Female_Order_1 Female_Order_2 Male_Order_1
+Female_Order_2 0.915          -              -           
+Male_Order_1   0.915          0.915          -           
+Male_Order_2   0.089          0.402          0.047       
+
+P value adjustment method: holm 

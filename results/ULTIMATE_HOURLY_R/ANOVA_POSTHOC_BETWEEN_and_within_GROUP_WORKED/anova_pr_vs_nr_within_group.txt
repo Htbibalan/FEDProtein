@@ -1,0 +1,11 @@
+                        Df Sum Sq Mean Sq F value Pr(>F)    
+group                    3    244      81   3.814 0.0098 ** 
+hour                     1   6245    6245 292.614 <2e-16 ***
+diet_phase               1     21      21   0.977 0.3232    
+group:hour               3     79      26   1.240 0.2939    
+group:diet_phase         3     54      18   0.850 0.4665    
+hour:diet_phase          1      1       1   0.058 0.8094    
+group:hour:diet_phase    3     16       5   0.252 0.8596    
+Residuals             1088  23220      21                   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1

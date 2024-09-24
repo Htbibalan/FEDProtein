@@ -1,0 +1,7 @@
+             Df Sum Sq Mean Sq F value Pr(>F)    
+group         3     49      16   0.836  0.474    
+hour          1   3211    3211 165.503 <2e-16 ***
+group:hour    3     79      26   1.358  0.255    
+Residuals   544  10555      19                   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
