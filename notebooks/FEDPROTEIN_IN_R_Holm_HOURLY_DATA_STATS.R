@@ -439,3 +439,226 @@ capture.output(pairwise_pr_hour, file = "C:\\Users\\hta031\\Github\\FEDProtein\\
 capture.output(pairwise_nr_hour, file = "C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\pairwise_nr_group_hour_comparisons.txt")
 
 
+
+
+
+####################code below should do whithin group comparisons####################
+# Load necessary libraries
+library(readxl)
+library(dplyr)
+library(ggplot2)
+library(car)
+library(multcomp)
+
+# Load the data from your subfolder
+male_order_1 <- read_excel("C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\MALE_ORDER_1.xlsx", sheet = "Sheet1")
+male_order_2 <- read_excel("C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\MALE_ORDER_2.xlsx", sheet = "Sheet1")
+female_order_1 <- read_excel("C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\FEMALE_ORDER_1.xlsx", sheet = "Sheet1")
+female_order_2 <- read_excel("C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\FEMALE_ORDER_2.xlsx", sheet = "Sheet1")
+
+# Ensure pellet intake columns are numeric
+male_order_1 <- male_order_1 %>%
+  mutate(pr_hourly_pellet_intake = as.numeric(pr_hourly_pellet_intake),
+         nr_hourly_pellet_intake = as.numeric(nr_hourly_pellet_intake))
+male_order_2 <- male_order_2 %>%
+  mutate(pr_hourly_pellet_intake = as.numeric(pr_hourly_pellet_intake),
+         nr_hourly_pellet_intake = as.numeric(nr_hourly_pellet_intake))
+female_order_1 <- female_order_1 %>%
+  mutate(pr_hourly_pellet_intake = as.numeric(pr_hourly_pellet_intake),
+         nr_hourly_pellet_intake = as.numeric(nr_hourly_pellet_intake))
+female_order_2 <- female_order_2 %>%
+  mutate(pr_hourly_pellet_intake = as.numeric(pr_hourly_pellet_intake),
+         nr_hourly_pellet_intake = as.numeric(nr_hourly_pellet_intake))
+
+# Add group identifiers
+male_order_1$group <- "Male_Order_1"
+male_order_2$group <- "Male_Order_2"
+female_order_1$group <- "Female_Order_1"
+female_order_2$group <- "Female_Order_2"
+
+# Combine the datasets into one, add 'diet_phase' to indicate PR or NR
+combined_data <- bind_rows(
+  male_order_1 %>% mutate(diet_phase = "PR"),
+  male_order_2 %>% mutate(diet_phase = "PR"),
+  female_order_1 %>% mutate(diet_phase = "PR"),
+  female_order_2 %>% mutate(diet_phase = "PR"),
+  
+  male_order_1 %>% mutate(diet_phase = "NR"),
+  male_order_2 %>% mutate(diet_phase = "NR"),
+  female_order_1 %>% mutate(diet_phase = "NR"),
+  female_order_2 %>% mutate(diet_phase = "NR")
+)
+
+# Combine PR and NR into one column for simplicity in analysis
+combined_data <- combined_data %>%
+  mutate(pellet_intake = ifelse(diet_phase == "PR", pr_hourly_pellet_intake, nr_hourly_pellet_intake))
+
+# --- ANOVA comparing diet phase (PR vs NR) within each group and hour ---
+anova_diet_phase <- aov(pellet_intake ~ group * hour * diet_phase, data = combined_data)
+
+# Save ANOVA results
+capture.output(summary(anova_diet_phase), file = "C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\anova_pr_vs_nr_within_group.txt")
+
+# --- Posthoc Tukey Test to compare PR vs NR intake within each group ---
+posthoc_diet_phase <- TukeyHSD(anova_diet_phase, "diet_phase")
+
+# Save posthoc test results
+capture.output(posthoc_diet_phase, file = "C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\posthoc_pr_vs_nr_tukey_within_group.txt")
+
+# --- Pairwise Comparisons for PR vs NR phases within the same group at specific hours ---
+pairwise_pr_vs_nr <- pairwise.t.test(combined_data$pellet_intake, interaction(combined_data$group, combined_data$hour, combined_data$diet_phase), p.adjust.method = "holm")
+
+# Save Pairwise Comparisons
+capture.output(pairwise_pr_vs_nr, file = "C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\pairwise_pr_vs_nr_group_hour_comparisons.txt")
+
+
+
+
+
+#########################################################################
+#############trying to measure the same stats for snacks, meals and mega meals##############
+
+
+
+# Load necessary libraries
+library(readr)
+library(dplyr)
+library(car)
+library(multcomp)
+
+# Load the dataset
+data <- read_csv("C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\MEAL_SNACK_MEGA_MEAL\\Mouse_Hourly_Averages_Data_SNACK_MEAL_MEGA_MEAL.csv")
+
+# Convert factors
+data$Sex <- as.factor(data$Sex)
+data$Order <- as.factor(data$Order)
+data$Phase <- as.factor(data$Phase)
+
+# --- Descriptive statistics for each group by meal/snack/mega meal and hour ---
+descriptive_stats <- data %>%
+  group_by(Sex, Order, Phase, Hour) %>%
+  summarise(
+    mean_meals = mean(Meals, na.rm = TRUE),
+    sd_meals = sd(Meals, na.rm = TRUE),
+    mean_snacks = mean(Snacks, na.rm = TRUE),
+    sd_snacks = sd(Snacks, na.rm = TRUE),
+    mean_mega_meals = mean(`Mega Meals`, na.rm = TRUE),
+    sd_mega_meals = sd(`Mega Meals`, na.rm = TRUE)
+  )
+
+# Save descriptive statistics
+write.csv(descriptive_stats, "C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\MEAL_SNACK_MEGA_MEAL\\descriptive_stats_meals_snacks_mega_meals.csv", row.names = FALSE)
+
+# --- ANOVA for each variable (meals, snacks, mega meals) ---
+
+# ANOVA for Meals
+anova_meals <- aov(Meals ~ Sex * Order * Phase * Hour, data = data)
+capture.output(summary(anova_meals), file = "C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\MEAL_SNACK_MEGA_MEAL\\anova_meals.txt")
+
+# ANOVA for Snacks
+anova_snacks <- aov(Snacks ~ Sex * Order * Phase * Hour, data = data)
+capture.output(summary(anova_snacks), file = "C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\MEAL_SNACK_MEGA_MEAL\\anova_snacks.txt")
+
+# ANOVA for Mega Meals
+anova_mega_meals <- aov(`Mega Meals` ~ Sex * Order * Phase * Hour, data = data)
+capture.output(summary(anova_mega_meals), file = "C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\MEAL_SNACK_MEGA_MEAL\\anova_mega_meals.txt")
+
+# --- Posthoc Tukey Test for each ANOVA ---
+posthoc_meals <- TukeyHSD(anova_meals)
+posthoc_snacks <- TukeyHSD(anova_snacks)
+posthoc_mega_meals <- TukeyHSD(anova_mega_meals)
+
+# Save posthoc results
+capture.output(posthoc_meals, file = "C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\MEAL_SNACK_MEGA_MEAL\\posthoc_meals_tukey.txt")
+capture.output(posthoc_snacks, file = "C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\MEAL_SNACK_MEGA_MEAL\\posthoc_snacks_tukey.txt")
+capture.output(posthoc_mega_meals, file = "C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\MEAL_SNACK_MEGA_MEAL\\posthoc_mega_meals_tukey.txt")
+
+# --- Pairwise comparisons between PR and NR phases at specific hours for each group ---
+pairwise_meals <- pairwise.t.test(data$Meals, interaction(data$Sex, data$Order, data$Phase, data$Hour), p.adjust.method = "holm")
+pairwise_snacks <- pairwise.t.test(data$Snacks, interaction(data$Sex, data$Order, data$Phase, data$Hour), p.adjust.method = "holm")
+pairwise_mega_meals <- pairwise.t.test(data$`Mega Meals`, interaction(data$Sex, data$Order, data$Phase, data$Hour), p.adjust.method = "holm")
+
+# Save pairwise comparisons
+capture.output(pairwise_meals, file = "C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\MEAL_SNACK_MEGA_MEAL\\pairwise_meals_comparisons.txt")
+capture.output(pairwise_snacks, file = "C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\MEAL_SNACK_MEGA_MEAL\\pairwise_snacks_comparisons.txt")
+capture.output(pairwise_mega_meals, file = "C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\MEAL_SNACK_MEGA_MEAL\\pairwise_mega_meals_comparisons.txt")
+
+
+
+
+###########################################################
+########fixing hour issue and comparing between and within groups############
+
+
+
+# Load necessary libraries
+library(readr)
+library(dplyr)
+library(car)
+library(multcomp)
+
+# Load the dataset
+data <- read_csv("C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\MEAL_SNACK_MEGA_MEAL\\Mouse_Hourly_Averages_Data_SNACK_MEAL_MEGA_MEAL.csv")
+
+# Convert relevant columns to factors
+data$Sex <- as.factor(data$Sex)
+data$Order <- as.factor(data$Order)
+data$Phase <- as.factor(data$Phase)
+data$Hour <- as.factor(data$Hour)  # Ensure 'Hour' is a factor
+
+# --- Descriptive statistics for each group by meal/snack/mega meal and hour ---
+descriptive_stats <- data %>%
+  group_by(Sex, Order, Phase, Hour) %>%
+  summarise(
+    mean_meals = mean(Meals, na.rm = TRUE),
+    sd_meals = sd(Meals, na.rm = TRUE),
+    mean_snacks = mean(Snacks, na.rm = TRUE),
+    sd_snacks = sd(Snacks, na.rm = TRUE),
+    mean_mega_meals = mean(`Mega Meals`, na.rm = TRUE),
+    sd_mega_meals = sd(`Mega Meals`, na.rm = TRUE)
+  )
+
+# Save descriptive statistics
+write.csv(descriptive_stats, "C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\MEAL_SNACK_MEGA_MEAL\\descriptive_stats_meals_snacks_mega_meals.csv", row.names = FALSE)
+
+# --- ANOVA for each variable (meals, snacks, mega meals) ---
+# Compare across Sex, Order, Phase, and Hour (all factors) with interactions
+
+# ANOVA for Meals
+anova_meals <- aov(Meals ~ Sex * Order * Phase * Hour, data = data)
+capture.output(summary(anova_meals), file = "C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\MEAL_SNACK_MEGA_MEAL\\anova_meals.txt")
+
+# ANOVA for Snacks
+anova_snacks <- aov(Snacks ~ Sex * Order * Phase * Hour, data = data)
+capture.output(summary(anova_snacks), file = "C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\MEAL_SNACK_MEGA_MEAL\\anova_snacks.txt")
+
+# ANOVA for Mega Meals
+anova_mega_meals <- aov(`Mega Meals` ~ Sex * Order * Phase * Hour, data = data)
+capture.output(summary(anova_mega_meals), file = "C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\MEAL_SNACK_MEGA_MEAL\\anova_mega_meals.txt")
+
+# --- Posthoc Tukey Test for each ANOVA ---
+# Tukey's HSD for main effects and interactions (excluding Hour)
+
+posthoc_meals <- TukeyHSD(anova_meals, "Sex:Order:Phase")  # Focus on simpler interactions without 'Hour'
+capture.output(posthoc_meals, file = "C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\MEAL_SNACK_MEGA_MEAL\\posthoc_meals_tukey.txt")
+
+posthoc_snacks <- TukeyHSD(anova_snacks, "Sex:Order:Phase")
+capture.output(posthoc_snacks, file = "C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\MEAL_SNACK_MEGA_MEAL\\posthoc_snacks_tukey.txt")
+
+posthoc_mega_meals <- TukeyHSD(anova_mega_meals, "Sex:Order:Phase")
+capture.output(posthoc_mega_meals, file = "C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\MEAL_SNACK_MEGA_MEAL\\posthoc_mega_meals_tukey.txt")
+
+# --- Pairwise comparisons for PR and NR phases within groups at specific hours ---
+# Group-by-hour and diet-phase comparisons for Meals
+pairwise_meals <- pairwise.t.test(data$Meals, interaction(data$Sex, data$Order, data$Phase, data$Hour), p.adjust.method = "holm")
+
+# Group-by-hour and diet-phase comparisons for Snacks
+pairwise_snacks <- pairwise.t.test(data$Snacks, interaction(data$Sex, data$Order, data$Phase, data$Hour), p.adjust.method = "holm")
+
+# Group-by-hour and diet-phase comparisons for Mega Meals
+pairwise_mega_meals <- pairwise.t.test(data$`Mega Meals`, interaction(data$Sex, data$Order, data$Phase, data$Hour), p.adjust.method = "holm")
+
+# Save pairwise comparisons
+capture.output(pairwise_meals, file = "C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\MEAL_SNACK_MEGA_MEAL\\pairwise_meals_comparisons.txt")
+capture.output(pairwise_snacks, file = "C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\MEAL_SNACK_MEGA_MEAL\\pairwise_snacks_comparisons.txt")
+capture.output(pairwise_mega_meals, file = "C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\MEAL_SNACK_MEGA_MEAL\\pairwise_mega_meals_comparisons.txt")
