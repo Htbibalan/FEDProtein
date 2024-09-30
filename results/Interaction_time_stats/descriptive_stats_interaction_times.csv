@@ -1,0 +1,9 @@
+"sex","order","Diet_Phase","mean_interaction_time","sd_interaction_time","count"
+"F",1,"pr_interaction_time",223.323333333333,53.2006299565877,5
+"F",1,"nr_interaction_time",196.843333333333,31.3760759001008,5
+"F",2,"pr_interaction_time",217.866666666667,35.2579053389291,6
+"F",2,"nr_interaction_time",224.444444444444,36.7875396577982,6
+"M",1,"pr_interaction_time",213.811111111111,24.7971765119129,6
+"M",1,"nr_interaction_time",186.911111111111,11.3301008462054,6
+"M",2,"pr_interaction_time",217.633333333333,13.8993884757568,6
+"M",2,"nr_interaction_time",261.633333333333,47.0245101575291,6

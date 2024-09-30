@@ -1,0 +1,8 @@
+"F.1.pr_interaction_time","M.1.pr_interaction_time","F.2.pr_interaction_time","M.2.pr_interaction_time","F.1.nr_interaction_time","M.1.nr_interaction_time","F.2.nr_interaction_time","Comparison"
+1,NA,NA,NA,NA,NA,NA,"M.1.pr_interaction_time"
+1,1,NA,NA,NA,NA,NA,"F.2.pr_interaction_time"
+1,1,1,NA,NA,NA,NA,"M.2.pr_interaction_time"
+1,1,1,1,NA,NA,NA,"F.1.nr_interaction_time"
+1,1,1,1,1,NA,NA,"M.1.nr_interaction_time"
+1,1,1,1,1,1,NA,"F.2.nr_interaction_time"
+1,0.512409318118762,0.775206703369337,0.775206703369337,0.0869187961639292,0.0140661290791608,1,"M.2.nr_interaction_time"
