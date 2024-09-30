@@ -1,9 +1,0 @@
-  Tukey multiple comparisons of means
-    95% family-wise confidence level
-
-Fit: aov(formula = pellet_intake ~ group * hour * diet_phase, data = combined_data)
-
-$diet_phase
-            diff        lwr       upr     p adj
-PR-NR -0.2748447 -0.8204639 0.2707745 0.3231804
-
