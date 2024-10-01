@@ -662,3 +662,54 @@ pairwise_mega_meals <- pairwise.t.test(data$`Mega Meals`, interaction(data$Sex, 
 capture.output(pairwise_meals, file = "C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\MEAL_SNACK_MEGA_MEAL\\pairwise_meals_comparisons.txt")
 capture.output(pairwise_snacks, file = "C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\MEAL_SNACK_MEGA_MEAL\\pairwise_snacks_comparisons.txt")
 capture.output(pairwise_mega_meals, file = "C:\\Users\\hta031\\Github\\FEDProtein\\results\\ULTIMATE_HOURLY_R\\MEAL_SNACK_MEGA_MEAL\\pairwise_mega_meals_comparisons.txt")
+
+
+
+
+
+
+# This code is designed to analyze the relationships between various factors (Sex, Order, Phase, and Hour) on the consumption of meals, snacks, and mega meals in mice using ANOVA and posthoc analyses. Here's a detailed breakdown of the statistical approach used:
+
+# ### 1. **ANOVA (Analysis of Variance)**
+# The first part of the code performs ANOVA for each variable (Meals, Snacks, and Mega Meals) to examine the effects of four factors (Sex, Order, Phase, and Hour) and their interactions. The goal is to determine if these factors have significant effects on the response variables (Meals, Snacks, Mega Meals).
+
+# - **Response variables**: `Meals`, `Snacks`, `Mega Meals`
+# - **Predictors**: `Sex`, `Order`, `Phase`, `Hour`, and their interactions (`Sex * Order * Phase * Hour`)
+# - **Model**: The interaction term (`*`) includes all possible combinations of the four factors. ANOVA checks both main effects (the individual influence of each factor) and interactions (how the factors combined affect the outcome).
+
+# **ANOVA Model Structure**:
+# For Meals:
+# ```r
+# anova_meals <- aov(Meals ~ Sex * Order * Phase * Hour, data = data)
+# ```
+# This model assesses how the response variable (Meals) changes depending on the combination of `Sex`, `Order`, `Phase`, and `Hour`. Similar models are used for Snacks and Mega Meals.
+
+# **Output**: The results from each ANOVA are saved into text files using `capture.output()`.
+
+# ### 2. **Posthoc Tukey HSD (Honestly Significant Difference) Test**
+# Once the ANOVA identifies that a significant effect exists, a posthoc test (Tukey's HSD) is performed to find which specific groups differ from each other. This test compares all possible pairs of group means and accounts for multiple comparisons.
+
+# - **Tukey's HSD** is applied for the main interaction effects excluding `Hour`, focusing on `Sex:Order:Phase`.
+# - By doing this, the Tukey test provides pairwise comparisons for the combined effect of `Sex`, `Order`, and `Phase` without including the `Hour` variable, simplifying the interpretation of interaction effects.
+
+
+# **Output**: The posthoc results for each variable are saved into text files.
+
+# ### 3. **Pairwise Comparisons**
+# Finally, pairwise comparisons are conducted using a pairwise t-test, focusing on comparing specific groups (based on the interaction of `Sex`, `Order`, `Phase`, and `Hour`) for each response variable (Meals, Snacks, Mega Meals).
+
+# - **Interaction**: Pairwise comparisons consider the interactions between `Sex`, `Order`, `Phase`, and `Hour`, which allows for more granular comparisons between groups.
+# - **Holm correction**: A Holm adjustment is applied to control for Type I error, adjusting the p-values for multiple testing.
+
+# Example for Meals:
+# ```r
+# pairwise_meals <- pairwise.t.test(data$Meals, interaction(data$Sex, data$Order, data$Phase, data$Hour), p.adjust.method = "holm")
+# ```
+
+
+
+
+# Adjustment Method: The p-values are adjusted using the Holm method (p.adjust.method = "holm"). The Holm correction is a step-down procedure that controls for multiple comparisons, adjusting p-values to reduce the risk of Type I errors (false positives) when performing multiple pairwise comparisons.
+
+# Why the Holm correction?
+# The Holm method is more powerful than the Bonferroni correction but still conservative enough to control for multiple comparisons. It's applied here because many pairwise comparisons are performed, and without a correction, the likelihood of obtaining false positives increases.
