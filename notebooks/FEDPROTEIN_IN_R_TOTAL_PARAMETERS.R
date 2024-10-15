@@ -1,3 +1,8 @@
+
+#The code runs statistical analysis for total parameters taken together, (i.e the old definition of meals
+# such that it takes the csv file that contains the combined data of meals, snacks and mega meals and runs ANOVA, Tukey and Holm tests on the data.)
+
+
 # Load necessary libraries
 library(tidyverse)
 library(reshape2)

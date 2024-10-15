@@ -1,0 +1,19 @@
+                      Df Sum Sq Mean Sq F value   Pr(>F)    
+sex                    1     22    22.3   4.056  0.04432 *  
+order                  1    144   143.6  26.107 3.93e-07 ***
+phase                  1     21    20.8   3.792  0.05181 .  
+hour                  23  23126  1005.5 182.865  < 2e-16 ***
+sex:order              1     78    78.4  14.250  0.00017 ***
+sex:phase              1      7     6.5   1.188  0.27607    
+order:phase            1     47    47.4   8.628  0.00339 ** 
+sex:hour              23    341    14.8   2.694 3.09e-05 ***
+order:hour            23    414    18.0   3.271 3.98e-07 ***
+phase:hour            23    168     7.3   1.330  0.13753    
+sex:order:phase        1      0     0.5   0.086  0.76995    
+sex:order:hour        23     90     3.9   0.715  0.83378    
+sex:phase:hour        23    178     7.7   1.404  0.09824 .  
+order:phase:hour      23    112     4.9   0.886  0.61837    
+sex:order:phase:hour  23    118     5.1   0.930  0.55813    
+Residuals            912   5015     5.5                     
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
