@@ -1,0 +1,19 @@
+                                     Df   Sum Sq Mean Sq F value   Pr(>F)    
+Order                                 1    26645   26645  32.170 1.43e-08 ***
+Sex                                   1        6       6   0.007 0.932652    
+Diet_Phase                            1    74159   74159  89.539  < 2e-16 ***
+Current_Size                          6   475165   79194  95.618  < 2e-16 ***
+Order:Sex                             1     4502    4502   5.436 0.019740 *  
+Order:Diet_Phase                      1     1355    1355   1.636 0.200953    
+Sex:Diet_Phase                        1      200     200   0.241 0.623265    
+Order:Current_Size                    6    10706    1784   2.154 0.044269 *  
+Sex:Current_Size                      6    11217    1870   2.257 0.035218 *  
+Diet_Phase:Current_Size               6    15330    2555   3.085 0.005093 ** 
+Order:Sex:Diet_Phase                  1       15      15   0.018 0.892936    
+Order:Sex:Current_Size                6     1987     331   0.400 0.879569    
+Order:Diet_Phase:Current_Size         6     7619    1270   1.533 0.162722    
+Sex:Diet_Phase:Current_Size           6     5683     947   1.144 0.333907    
+Order:Sex:Diet_Phase:Current_Size     6    20242    3374   4.073 0.000436 ***
+Residuals                         19639 16265697     828                     
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1

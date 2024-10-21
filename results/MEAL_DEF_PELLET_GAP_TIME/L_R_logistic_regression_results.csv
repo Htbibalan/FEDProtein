@@ -1,0 +1,61 @@
+,Estimate,Std. Error,z value,Pr(>|z|)
+(Intercept),-1.272374714,0.031984872,-39.78051573,0
+Current_Size2,-0.263974329,0.051037232,-5.172191332,2.31364494325443e-07
+Current_Size3,-0.645921611,0.058060574,-11.12496076,9.48475965154002e-29
+Current_Size4,-0.896655104,0.071279323,-12.57945592,2.73909832677257e-36
+Current_Size5,-1.184512895,0.093731857,-12.63724979,1.31576135968224e-36
+Current_Size6,-1.561852952,0.140438424,-11.12126519,9.88600039523062e-29
+Current_Size7,-15.35361357,97.35317932,-0.157710448,0.874684967
+Time_Gap,0.001787056,0.000679214,2.631064824,0.00851178
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+"Intercept (-1.272):
+The intercept represents the log odds of the mouse taking another pellet when the Current_Size is 1 (the baseline category for the categorical variable Current_Size) and the Time_Gap is zero.
+A negative value (-1.272) means that the odds of the mouse taking another pellet when Current_Size is 1 are lower than 50%.
+2. Current_Size2 (-0.264):
+This coefficient tells us how the log odds of taking another pellet change when the current event size is 2 compared to the baseline (size 1).
+The negative estimate (-0.264) means that the odds of taking another pellet decrease when the event size is 2 compared to size 1.
+The p-value (2.31e-07) indicates that this difference is highly significant.
+3. Current_Size3 (-0.646):
+The coefficient for size 3 tells us that the odds of taking another pellet further decrease compared to size 1, as the log odds decrease by -0.646.
+The p-value (9.48e-29) indicates that this result is also highly significant.
+4. Current_Size4 (-0.897):
+When the event size is 4, the odds of taking another pellet continue to decrease. The log odds drop by -0.897, showing a larger decrease compared to the previous event sizes.
+The p-value (2.73e-36) confirms that this is highly significant.
+5. Current_Size5 (-1.185):
+For size 5, the odds of taking another pellet decrease even more sharply (log odds decrease by -1.185).
+This is also highly significant (p = 1.31e-36).
+6. Current_Size6 (-1.562):
+For size 6, the odds decrease further. The log odds drop by -1.562, meaning that the likelihood of taking another pellet is much lower when the current event size is 6.
+The p-value (9.88e-29) shows that this result is also statistically significant.
+7. Current_Size7 (-15.354):
+For size 7, the coefficient is -15.354, which is a very large decrease in the log odds.
+However, the high standard error (97.35) and p-value (0.8747) indicate that this estimate is not significant. This means that when the current size is 7, the result is too uncertain, and we cannot confidently say how likely it is for the mouse to take another pellet.
+8. Time_Gap (0.00179):
+The coefficient for Time_Gap is 0.00179, indicating a small positive effect of the time gap on the likelihood of taking another pellet. This means that as the time gap between pellets increases, the odds of taking another pellet slightly increase.
+The p-value (0.00851) shows that this effect is statistically significant, though the effect size is quite small.
+Key Takeaways:
+The likelihood of taking another pellet decreases as the current event size increases:
+
+The coefficients for event sizes 2, 3, 4, 5, and 6 are all negative, meaning that as the mouse eats more pellets in a single event, the probability of it taking another pellet decreases.
+After the 6th pellet, the likelihood of taking another pellet is very low, as indicated by the large negative coefficient for Current_Size6.
+Time Gap's Effect:
+
+The time gap has a slight positive effect, meaning that the longer the time gap (though still within the 60-second threshold), the more likely the mouse is to take another pellet. However, the effect is small.
+Size 7's Uncertainty:
+
+The result for Current_Size7 is not significant. This could be due to the small number of observations for size 7, making the estimate unreliable.
+Conclusion:
+As the event size increases, the likelihood of the mouse taking one more pellet decreases significantly up to 6 pellets.
+There is a very small but significant effect of time gap, meaning that a slightly longer pause (within the 60-second threshold) marginally increases the chance of adding another pellet.",,,,
