@@ -1,372 +1,134 @@
-# Load necessary libraries
-library(dplyr)
-library(ggplot2)
+
+
+###############################################################################################
+############################# FORMATTED DATA NEW ANALYSIS ####################################
+###################################LINE PLOTS#############################################################
+
+
+
 library(tidyr)
-library(car)  # For ANOVA and posthoc tests
-library(multcomp)  # For Holm correction
+library(dplyr)
+library(afex)
+library(emmeans)
+library(ggplot2)
 
-# Step 1: Load the data
-data <- read.csv("results\\Protein_intake_per_phase_per_day\\protein_intake_per_mouse.csv")
+# Load the dataset
+data <- read.csv("C:\\Users\\hta031\\Github\\FEDProtein\\results\\Protein_intake_per_phase_per_day\\LINE_PLOT_STATS\\Protein_intake_trend.csv")
 
-# Step 2: Filter out the first 3 days (Grain pellets)
-data_filtered <- data %>%
-  filter(Day > 3)  # Remove Grain days 1, 2, 3
+# Step 1: Reshape the data
+long_data <- data %>%
+  pivot_longer(cols = starts_with(c("NR", "PR")),
+               names_to = "time_phase",
+               values_to = "value")
 
-# Step 3: Ensure that Sex, Order, and Day are factors for ANOVA and posthoc tests
-data_filtered$Sex <- as.factor(data_filtered$Sex)
-data_filtered$Order <- as.factor(data_filtered$Order)
-data_filtered$Day <- as.factor(data_filtered$Day)
+# Step 2: Generate Descriptive Statistics
+descriptive_stats <- long_data %>%
+  group_by(time_phase, Sex, Order) %>%
+  summarise(mean_value = mean(value, na.rm = TRUE),
+            sd_value = sd(value, na.rm = TRUE),
+            n = n())
 
-# Step 4: Descriptive statistics (mean, SD) grouped by Order and Sex
-descriptive_stats <- data_filtered %>%
-  group_by(Sex, Order, Day) %>%
+# Save descriptive statistics to CSV
+write.csv(descriptive_stats, "C:\\Users\\hta031\\Github\\FEDProtein\\results\\Protein_intake_per_phase_per_day\\LINE_PLOT_STATS\\protein_intake_trend_descriptive_stats.csv")
+
+# Step 3: Run ANOVA for each time point, sex, and order
+anova_results <- aov_car(value ~ time_phase * Sex * Order + Error(Mouse/time_phase), data = long_data)
+
+
+
+
+
+# Save ANOVA results to CSV
+write.csv(as.data.frame(anova(anova_results)), "C:\\Users\\hta031\\Github\\FEDProtein\\results\\Protein_intake_per_phase_per_day\\LINE_PLOT_STATS\\protein_intake_trend_anova_results.csv")
+
+# Step 4: Post-hoc tests to compare each time point with others (including interactions with Sex and Order)
+posthoc_results <- emmeans(anova_results, pairwise ~ time_phase * Sex * Order, adjust= "holm")
+
+# Extract the contrasts for time_phase comparisons
+posthoc_contrasts <- summary(posthoc_results$contrasts)
+
+
+
+
+# Convert post-hoc results to a data frame including information on time_phase, Sex, and Order
+posthoc_df <- as.data.frame(posthoc_contrasts)
+
+# Save post-hoc results to CSV (including time_phase, Sex, and Order)
+write.csv(as.data.frame(posthoc_results$contrasts), "C:\\Users\\hta031\\Github\\FEDProtein\\results\\Protein_intake_per_phase_per_day\\LINE_PLOT_STATS\\protein_intake_trend_posthoc_results_HOLM.csv")
+
+
+
+
+###################################################################################################
+########################## Scatter_plots_data ####################################################
+
+
+# Load necessary libraries
+library(tidyverse)
+library(reshape2
+library(car)  # For ANOVA
+library(multcomp)  # For Tukey and Holm post-hoc tests
+
+# Load the data
+data <- read.csv("C:/Users/hta031/Github/FEDProtein/results/Protein_intake_per_phase_per_day/scatter_plot_average_per_phase/Average_Protein_Intake_per_Phase.csv")
+
+# Reshape the data to long format
+data_long <- melt(data, id.vars = c("Mouse.ID", "Sex", "Order"),
+                  measure.vars = c("NR", "PR"),
+                  variable.name = "Diet_Phase", value.name = "Total_Parameters")
+
+# Step 1: Descriptive statistics
+desc_stats <- data_long %>%
+  group_by(Sex, Order, Diet_Phase) %>%
   summarise(
-    Mean_Protein = mean(Protein.Intake..g., na.rm = TRUE),
-    SD_Protein = sd(Protein.Intake..g., na.rm = TRUE),
-    n = n(),
-    .groups = 'drop'
+    mean_total_parameters = mean(Total_Parameters, na.rm = TRUE),
+    sd_total_parameters = sd(Total_Parameters, na.rm = TRUE),
+    count = n()
   )
 
 # Save descriptive statistics to CSV
-write.csv(descriptive_stats, "results\\Protein_intake_per_phase_per_day\\descriptive_stats_protein.csv")
+write.csv(desc_stats, "C:/Users/hta031/Github/FEDProtein/results/Protein_intake_per_phase_per_day/scatter_plot_average_per_phase/AV_PROTEIN_INTAKE_DESCRIPTIVE.csv", row.names = FALSE)
 
-# Step 5: Two-Way ANOVA (between and within groups)
-anova_results <- aov(Protein.Intake..g. ~ Sex * Order * Day, data = data_filtered)
+# Step 2: Run ANOVA with grouping information
+anova_model <- aov(Total_Parameters ~ Sex * Order * Diet_Phase, data = data_long)
+anova_results <- Anova(anova_model, type = 2)
 
-# Print ANOVA summary
-anova_summary <- summary(anova_results)
-print(anova_summary)
+# Create ANOVA table with grouping information
+anova_table <- data.frame(
+  Factor = rownames(anova_results),
+  anova_results
+)
 
 # Save ANOVA results to CSV
-anova_table <- as.data.frame(anova_summary[[1]])
-write.csv(anova_table, "results\\Protein_intake_per_phase_per_day\\anova_results_protein.csv")
-
-# Step 6: Posthoc Tukey HSD test
-# Apply Tukey HSD to the interaction term 'Sex:Order:Day' explicitly
-tukey_results <- TukeyHSD(anova_results, "Sex:Order:Day", conf.level = 0.95)
-
-# Save Tukey HSD results in a clear format
-tukey_table <- as.data.frame(tukey_results$`Sex:Order:Day`)  # Extract the interaction term results
-tukey_table$comparison <- rownames(tukey_table)  # Add the comparison column to show group names
-
-# Save the Tukey results
-write.csv(tukey_table, "results\\Protein_intake_per_phase_per_day\\tukey_posthoc_results.csv", row.names = FALSE)
-
-# Step 7: Posthoc Holm correction
-# Use glht from multcomp for Holm correction on the interaction term 'Sex:Order:Day'
-holm_results <- glht(anova_results, linfct = mcp(`Sex:Order:Day` = "Tukey"))
-
-# Get summary and extract p-values
-holm_summary <- summary(holm_results, test = adjusted("holm"))
-holm_pvalues <- as.data.frame(holm_summary$test$pvalues)
-
-# Add group comparisons to Holm results
-holm_pvalues$comparison <- rownames(holm_summary$test$pvalues)
-
-# Save Holm posthoc results
-write.csv(holm_pvalues, "results\\Protein_intake_per_phase_per_day\\holm_posthoc_results.csv", row.names = FALSE)
-
-# Optional: Visualization of mean protein intake per day
-ggplot(descriptive_stats, aes(x = as.factor(Day), y = Mean_Protein, color = Sex, group = interaction(Sex, Order))) +
-  geom_line() +
-  geom_point() +
-  facet_wrap(~Order) +
-  labs(title = "Mean Protein Intake Per Day by Sex and Order", x = "Day", y = "Mean Protein Intake (g)") +
-  theme_minimal()
-
-
-
-
-
-#########################################
-#####################################
-########################################
-####################################
-# Load necessary libraries
-library(dplyr)
-library(ggplot2)
-library(tidyr)
-library(car)  # For ANOVA and posthoc tests
-library(multcomp)  # For Holm correction
-
-# Step 1: Load the data
-data <- read.csv("results\\Protein_intake_per_phase_per_day\\protein_intake_per_mouse.csv")
-
-# Step 2: Filter out the first 3 days (Grain pellets)
-data_filtered <- data %>%
-  filter(Day > 3)  # Remove Grain days 1, 2, 3
-
-# Step 3: Ensure that Sex, Order, and Day are factors for ANOVA and posthoc tests
-data_filtered$Sex <- as.factor(data_filtered$Sex)
-data_filtered$Order <- as.factor(data_filtered$Order)
-data_filtered$Day <- as.factor(data_filtered$Day)
-
-# Step 4: Descriptive statistics (mean, SD) grouped by Order and Sex
-descriptive_stats <- data_filtered %>%
-  group_by(Sex, Order, Day) %>%
-  summarise(
-    Mean_Protein = mean(Protein.Intake..g., na.rm = TRUE),
-    SD_Protein = sd(Protein.Intake..g., na.rm = TRUE),
-    n = n(),
-    .groups = 'drop'
-  )
-
-# Save descriptive statistics to CSV
-write.csv(descriptive_stats, "results\\Protein_intake_per_phase_per_day\\descriptive_stats_protein.csv")
-
-# Step 5: Two-Way ANOVA (between and within groups)
-anova_results <- aov(Protein.Intake..g. ~ Sex * Order * Day, data = data_filtered)
-
-# Print ANOVA summary
-anova_summary <- summary(anova_results)
-print(anova_summary)
-
-# Save ANOVA results to CSV
-anova_table <- as.data.frame(anova_summary[[1]])
-write.csv(anova_table, "results\\Protein_intake_per_phase_per_day\\anova_results_protein.csv")
-
-# Step 6: Posthoc Tukey HSD test
-# Apply Tukey HSD to the interaction term 'Sex:Order:Day' explicitly
-tukey_results <- TukeyHSD(anova_results, "Sex:Order:Day", conf.level = 0.95)
-
-# Save Tukey HSD results in a clear format
-tukey_table <- as.data.frame(tukey_results$`Sex:Order:Day`)
-tukey_table$comparison <- rownames(tukey_table)  # Add the comparison column to show group names
-
-# Save the Tukey results
-write.csv(tukey_table, "results\\Protein_intake_per_phase_per_day\\tukey_posthoc_results.csv", row.names = FALSE)
-
-# Step 7: Posthoc Holm correction with distinct group comparisons
-
-# Simplified Holm test for each factor separately (Sex, Order, Day)
-holm_results_sex <- glht(anova_results, linfct = mcp(Sex = "Tukey"))
-holm_summary_sex <- summary(holm_results_sex, test = adjusted("holm"))
-holm_table_sex <- data.frame(
-  comparison = rownames(holm_summary_sex$test$coefficients),
-  p_value = holm_summary_sex$test$pvalues,
-  factor = 'Sex'  # Add the factor label
-)
-
-holm_results_order <- glht(anova_results, linfct = mcp(Order = "Tukey"))
-holm_summary_order <- summary(holm_results_order, test = adjusted("holm"))
-holm_table_order <- data.frame(
-  comparison = rownames(holm_summary_order$test$coefficients),
-  p_value = holm_summary_order$test$pvalues,
-  factor = 'Order'  # Add the factor label
-)
-
-holm_results_day <- glht(anova_results, linfct = mcp(Day = "Tukey"))
-holm_summary_day <- summary(holm_results_day, test = adjusted("holm"))
-holm_table_day <- data.frame(
-  comparison = rownames(holm_summary_day$test$coefficients),
-  p_value = holm_summary_day$test$pvalues,
-  factor = 'Day'  # Add the factor label
-)
-
-# Combine Holm results from each factor
-holm_table <- rbind(holm_table_sex, holm_table_order, holm_table_day)
-
-# Ensure all columns are correctly labeled
-colnames(holm_table) <- c("comparison", "p_value", "factor")
-
-# Save Holm posthoc results with clear comparisons
-write.csv(holm_table, "results\\Protein_intake_per_phase_per_day\\holm_posthoc_results.csv", row.names = FALSE)
-
-# Optional: Visualization of mean protein intake per day
-ggplot(descriptive_stats, aes(x = as.factor(Day), y = Mean_Protein, color = Sex, group = interaction(Sex, Order))) +
-  geom_line() +
-  geom_point() +
-  facet_wrap(~Order) +
-  labs(title = "Mean Protein Intake Per Day by Sex and Order", x = "Day", y = "Mean Protein Intake (g)") +
-  theme_minimal()
-
-
-
-
-
-#############################################################################
-################ average per phase############################################
-
-# Load necessary libraries
-library(dplyr)
-library(ggplot2)
-library(car)
-library(multcomp)
-
-# Read your filtered data
-data <- read.csv("results\\Protein_intake_per_phase_per_day\\avg_protein_intake.csv")
-
-# Convert Sex, Order, and Phase to factors
-data$Sex <- as.factor(data$Sex)
-data$Order <- as.factor(data$Order)
-data$Phase <- as.factor(data$Phase)
-
-# Descriptive statistics
-descriptive_stats <- data %>%
-  group_by(Sex, Order, Phase) %>%
-  summarize(
-    Mean = mean(Average.Protein.Intake..g.),
-    SD = sd(Average.Protein.Intake..g.),
-    Min = min(Average.Protein.Intake..g.),
-    Max = max(Average.Protein.Intake..g.)
-  )
-
-# Print descriptive statistics
-print(descriptive_stats)
-
-# Perform ANOVA
-anova_result <- aov(Average.Protein.Intake..g. ~ Sex * Order * Phase, data = data)
-summary_anova <- summary(anova_result)
-print(summary_anova)
-
-# Posthoc Tukey test
-tukey_result <- TukeyHSD(anova_result, "Phase")  # Use "Phase" because it's the most significant
-print(tukey_result)
-
-# Posthoc Holm test
-holm_result <- glht(anova_result, linfct = mcp(Phase = "Tukey"))  # Only Phase is significant
-summary_holm <- summary(holm_result)
-print(summary_holm)
-
-# Save results to CSV files
-write.csv(descriptive_stats, "results\\Protein_intake_per_phase_per_day\\AVdescriptive_stats.csv")
-write.csv(as.data.frame(summary(anova_result)[[1]]), "results\\Protein_intake_per_phase_per_day\\AVanova_result.csv")
-write.csv(as.data.frame(tukey_result$Phase), "results\\Protein_intake_per_phase_per_day\\AVtukey_result.csv")
-write.csv(as.data.frame(summary_holm$test$pvalues), "results\\Protein_intake_per_phase_per_day\\AVholm_result.csv")
-
-
-
-######################################fixing holm and tukey lables in Average analysis###########
-# Load necessary libraries
-library(dplyr)
-library(ggplot2)
-library(car)
-library(multcomp)
-
-# Read your filtered data
-data <- read.csv("results\\Protein_intake_per_phase_per_day\\avg_protein_intake.csv")
-
-# Convert Sex, Order, and Phase to factors
-data$Sex <- as.factor(data$Sex)
-data$Order <- as.factor(data$Order)
-data$Phase <- as.factor(data$Phase)
-
-# Filter out the Grain phase
-data_filtered <- data %>% filter(Phase != "Grain")
-
-# Descriptive statistics (only NR and PR phases)
-descriptive_stats <- data_filtered %>%
-  group_by(Sex, Order, Phase) %>%
-  summarize(
-    Mean = mean(Average.Protein.Intake..g.),
-    SD = sd(Average.Protein.Intake..g.),
-    Min = min(Average.Protein.Intake..g.),
-    Max = max(Average.Protein.Intake..g.)
-  )
-
-# Print descriptive statistics
-print(descriptive_stats)
-
-# Perform ANOVA including interactions between Sex, Order, and Phase
-anova_result <- aov(Average.Protein.Intake..g. ~ Sex * Order * Phase, data = data_filtered)
-summary_anova <- summary(anova_result)
-print(summary_anova)
-
-# Posthoc Tukey test for the interaction of Order and Phase
-tukey_result <- TukeyHSD(anova_result, "Order:Phase")  # Apply to Order and Phase interaction
-
-# Convert Tukey results into dataframe
-tukey_df <- as.data.frame(tukey_result$`Order:Phase`)
-tukey_df$Comparison <- rownames(tukey_result$`Order:Phase`)
-rownames(tukey_df) <- NULL  # Reset rownames for clean output
-print(tukey_df)
-
-# Posthoc Holm test for interactions of Order and Phase
-holm_result <- glht(anova_result, linfct = mcp(`Order:Phase` = "Tukey"))
-summary_holm <- summary(holm_result)
-
-# Convert Holm test results into dataframe
-holm_df <- data.frame(Comparison = names(summary_holm$test$tstat), p_value = summary_holm$test$pvalues)
-print(holm_df)
-
-# Save results to CSV files
-write.csv(descriptive_stats, "results\\Protein_intake_per_phase_per_day\\AVdescriptive_stats.csv")
-write.csv(as.data.frame(summary(anova_result)[[1]]), "results\\Protein_intake_per_phase_per_day\\AVanova_result.csv")
-write.csv(tukey_df, "results\\Protein_intake_per_phase_per_day\\AVtukey_result.csv")  # Save Tukey with labels
-write.csv(holm_df, "results\\Protein_intake_per_phase_per_day\\AVholm_result.csv")  # Save Holm with labels
-
-
-
-#######################################################
-######################################################
-###################################################fixing holm#######################################
-# Load necessary libraries
-library(dplyr)
-library(ggplot2)
-library(car)
-library(multcomp)
-
-# Read your filtered data
-data <- read.csv("results\\Protein_intake_per_phase_per_day\\avg_protein_intake.csv")
-
-# Convert Sex, Order, and Phase to factors
-data$Sex <- as.factor(data$Sex)
-data$Order <- as.factor(data$Order)
-data$Phase <- as.factor(data$Phase)
-
-# Filter out the Grain phase
-data_filtered <- data %>% filter(Phase != "Grain")
-
-# Descriptive statistics (only NR and PR phases)
-descriptive_stats <- data_filtered %>%
-  group_by(Sex, Order, Phase) %>%
-  summarize(
-    Mean = mean(Average.Protein.Intake..g.),
-    SD = sd(Average.Protein.Intake..g.),
-    Min = min(Average.Protein.Intake..g.),
-    Max = max(Average.Protein.Intake..g.)
-  )
-
-# Print descriptive statistics
-print(descriptive_stats)
-
-# Perform ANOVA including interactions between Sex, Order, and Phase
-anova_result <- aov(Average.Protein.Intake..g. ~ Sex * Order * Phase, data = data_filtered)
-summary_anova <- summary(anova_result)
-print(summary_anova)
-
-# Posthoc Tukey test for the interaction of Order and Phase
-tukey_result <- TukeyHSD(anova_result, "Order:Phase")  # Apply to Order and Phase interaction
-
-# Convert Tukey results into dataframe
-tukey_df <- as.data.frame(tukey_result$`Order:Phase`)
-tukey_df$Comparison <- rownames(tukey_result$`Order:Phase`)
-rownames(tukey_df) <- NULL  # Reset rownames for clean output
-print(tukey_df)
-
-# Posthoc Holm test for interactions of Order and Phase
-# Manual comparison of Order and Phase interaction using glht
-contrasts_order_phase <- rbind(
-    "1:NR vs 1:PR" = c(1, -1, 0, 0),
-    "2:NR vs 2:PR" = c(0, 0, 1, -1),
-    "1:NR vs 2:NR" = c(1, 0, -1, 0),
-    "1:PR vs 2:PR" = c(0, 1, 0, -1)
-)
-
-# Create custom contrasts for Order and Phase interaction
-interaction_model <- interaction(data_filtered$Order, data_filtered$Phase)
-anova_result_interaction <- aov(Average.Protein.Intake..g. ~ interaction_model, data = data_filtered)
-
-# Apply Holm correction using glht with custom contrasts
-holm_result <- glht(anova_result_interaction, linfct = mcp(interaction_model = contrasts_order_phase))
-summary_holm <- summary(holm_result)
-
-# Convert Holm test results into dataframe
-holm_df <- data.frame(Comparison = names(summary_holm$test$tstat), p_value = summary_holm$test$pvalues)
-print(holm_df)
-
-# Save results to CSV files
-write.csv(descriptive_stats, "results\\Protein_intake_per_phase_per_day\\AVdescriptive_stats.csv")
-write.csv(as.data.frame(summary(anova_result)[[1]]), "results\\Protein_intake_per_phase_per_day\\AVanova_result.csv")
-write.csv(tukey_df, "results\\Protein_intake_per_phase_per_day\\AVtukey_result.csv")  # Save Tukey with labels
-write.csv(holm_df, "results\\Protein_intake_per_phase_per_day\\AVholm_result.csv")  # Save Holm with labels
+write.csv(anova_table, "C:/Users/hta031/Github/FEDProtein/results/Protein_intake_per_phase_per_day/scatter_plot_average_per_phase/anova_results_AV_INTAKE.csv", row.names = FALSE)
+
+# Step 3: Tukey HSD post-hoc test
+# Create interaction term for group comparisons
+data_long$interaction_term <- interaction(data_long$Sex, data_long$Order, data_long$Diet_Phase)
+
+# Perform Tukey HSD test on the interaction term
+tukey_test <- TukeyHSD(aov(Total_Parameters ~ interaction_term, data = data_long))
+tukey_table <- as.data.frame(tukey_test$interaction_term)
+
+# Add group information to the Tukey results
+comparison_labels <- str_split_fixed(rownames(tukey_test$interaction_term), "-", 2)
+tukey_table$Group1 <- comparison_labels[, 1]
+tukey_table$Group2 <- comparison_labels[, 2]
+
+# Save Tukey HSD results to CSV with group labels
+write.csv(tukey_table, "C:/Users/hta031/Github/FEDProtein/results/Protein_intake_per_phase_per_day/scatter_plot_average_per_phase/tukey_results_AV_INTAKE.csv", row.names = FALSE)
+
+# Step 4: Holm post-hoc test
+# Perform pairwise t-tests with Holm correction
+holm_test <- pairwise.t.test(data_long$Total_Parameters, data_long$interaction_term, p.adjust.method = "holm")
+
+# Extract and save Holm test results to CSV
+holm_table <- as.data.frame(holm_test$p.value)
+holm_table$Comparison <- rownames(holm_table)
+write.csv(holm_table, "C:/Users/hta031/Github/FEDProtein/results/Protein_intake_per_phase_per_day/scatter_plot_average_per_phase//holm_results_AV_INTAKE.csv", row.names = FALSE)
+
+# Print summary of results
+print(desc_stats)
+print(anova_table)
+print(tukey_table)
+print(holm_table)

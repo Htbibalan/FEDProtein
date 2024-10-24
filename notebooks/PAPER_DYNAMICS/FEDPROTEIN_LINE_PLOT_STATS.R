@@ -8,11 +8,11 @@ library(emmeans)
 library(ggplot2)
 
 # Load the dataset
-data <- read.csv("C:\\Users\\hta031\\Github\\FEDProtein\\results\\Working_on_trend_data\\Pellets_trend.csv")
+data <- read.csv("C:\\Users\\hta031\\Github\\FEDProtein\\results\\LINE_PLOTS\\Pellets_trend.csv")
 
 # Step 1: Reshape the data
 long_data <- data %>%
-  pivot_longer(cols = starts_with(c("G", "NR", "PR")),
+  pivot_longer(cols = starts_with(c("NR", "PR")),
                names_to = "time_phase",
                values_to = "value")
 
@@ -24,7 +24,7 @@ descriptive_stats <- long_data %>%
             n = n())
 
 # Save descriptive statistics to CSV
-write.csv(descriptive_stats, "C://Users//hta031//Github//FEDProtein//results//Working_on_trend_data//R_FEDPROTEIN_Pellets_trend_descriptive_stats.csv")
+write.csv(descriptive_stats, "C://Users//hta031//Github//FEDProtein//results//LINE_PLOTS//R_FEDPROTEIN_Pellets_trend_descriptive_stats.csv")
 
 # Step 3: Run ANOVA for each time point, sex, and order
 anova_results <- aov_car(value ~ time_phase * Sex * Order + Error(Mouse/time_phase), data = long_data)
@@ -34,7 +34,7 @@ anova_results <- aov_car(value ~ time_phase * Sex * Order + Error(Mouse/time_pha
 
 
 # Save ANOVA results to CSV
-write.csv(as.data.frame(anova(anova_results)), "C://Users//hta031//Github//FEDProtein//results//Working_on_trend_data//R_FEDPROTEIN_Pellets_trend_anova_results.csv")
+write.csv(as.data.frame(anova(anova_results)), "C://Users//hta031//Github//FEDProtein//results//LINE_PLOTS//R_FEDPROTEIN_Pellets_trend_anova_results.csv")
 
 # Step 4: Post-hoc tests to compare each time point with others (including interactions with Sex and Order)
 posthoc_results <- emmeans(anova_results, pairwise ~ time_phase * Sex * Order, adjust= "Tukey")
@@ -49,7 +49,7 @@ posthoc_contrasts <- summary(posthoc_results$contrasts)
 posthoc_df <- as.data.frame(posthoc_contrasts)
 
 # Save post-hoc results to CSV (including time_phase, Sex, and Order)
-write.csv(as.data.frame(posthoc_results$contrasts), "C://Users//hta031//Github//FEDProtein//results//Working_on_trend_data//R_FEDPROTEIN_Pellets_trend_posthoc_results.csv")
+write.csv(as.data.frame(posthoc_results$contrasts), "C://Users//hta031//Github//FEDProtein//results//LINE_PLOTS//R_FEDPROTEIN_Pellets_trend_posthoc_results.csv")
 
 
 
@@ -65,11 +65,11 @@ library(emmeans)
 library(ggplot2)
 
 # Load the dataset
-data <- read.csv("C:\\Users\\hta031\\Github\\FEDProtein\\results\\Working_on_trend_data\\snacks_trend.csv")
+data <- read.csv("C:\\Users\\hta031\\Github\\FEDProtein\\results\\LINE_PLOTS\\snacks_trend.csv")
 
 # Step 1: Reshape the data
 long_data <- data %>%
-  pivot_longer(cols = starts_with(c("G", "NR", "PR")),
+  pivot_longer(cols = starts_with(c("NR", "PR")),
                names_to = "time_phase",
                values_to = "value")
 
@@ -81,7 +81,7 @@ descriptive_stats <- long_data %>%
             n = n())
 
 # Save descriptive statistics to CSV
-write.csv(descriptive_stats, "C://Users//hta031//Github//FEDProtein//results//Working_on_trend_data//R_FEDPROTEIN_snacks_trend_descriptive_stats.csv")
+write.csv(descriptive_stats, "C://Users//hta031//Github//FEDProtein//results//LINE_PLOTS//R_FEDPROTEIN_snacks_trend_descriptive_stats.csv")
 
 # Step 3: Run ANOVA for each time point, sex, and order
 anova_results <- aov_car(value ~ time_phase * Sex * Order + Error(Mouse/time_phase), data = long_data)
@@ -91,7 +91,7 @@ anova_results <- aov_car(value ~ time_phase * Sex * Order + Error(Mouse/time_pha
 
 
 # Save ANOVA results to CSV
-write.csv(as.data.frame(anova(anova_results)), "C://Users//hta031//Github//FEDProtein//results//Working_on_trend_data//R_FEDPROTEIN_snacks_trend_anova_results.csv")
+write.csv(as.data.frame(anova(anova_results)), "C://Users//hta031//Github//FEDProtein//results//LINE_PLOTS//R_FEDPROTEIN_snacks_trend_anova_results.csv")
 
 # Step 4: Post-hoc tests to compare each time point with others (including interactions with Sex and Order)
 posthoc_results <- emmeans(anova_results, pairwise ~ time_phase * Sex * Order, adjust= "Tukey")
@@ -106,7 +106,7 @@ posthoc_contrasts <- summary(posthoc_results$contrasts)
 posthoc_df <- as.data.frame(posthoc_contrasts)
 
 # Save post-hoc results to CSV (including time_phase, Sex, and Order)
-write.csv(as.data.frame(posthoc_results$contrasts), "C://Users//hta031//Github//FEDProtein//results//Working_on_trend_data//R_FEDPROTEIN_snacks_trend_posthoc_results.csv")
+write.csv(as.data.frame(posthoc_results$contrasts), "C://Users//hta031//Github//FEDProtein//results//LINE_PLOTS//R_FEDPROTEIN_snacks_trend_posthoc_results.csv")
 
 
 
@@ -120,11 +120,11 @@ library(emmeans)
 library(ggplot2)
 
 # Load the dataset
-data <- read.csv("C:\\Users\\hta031\\Github\\FEDProtein\\results\\Working_on_trend_data\\meals_trend.csv")
+data <- read.csv("C:\\Users\\hta031\\Github\\FEDProtein\\results\\LINE_PLOTS\\meals_trend.csv")
 
 # Step 1: Reshape the data
 long_data <- data %>%
-  pivot_longer(cols = starts_with(c("G", "NR", "PR")),
+  pivot_longer(cols = starts_with(c("NR", "PR")),
                names_to = "time_phase",
                values_to = "value")
 
@@ -136,7 +136,7 @@ descriptive_stats <- long_data %>%
             n = n())
 
 # Save descriptive statistics to CSV
-write.csv(descriptive_stats, "C://Users//hta031//Github//FEDProtein//results//Working_on_trend_data//R_FEDPROTEIN_meals_trend_descriptive_stats.csv")
+write.csv(descriptive_stats, "C://Users//hta031//Github//FEDProtein//results//LINE_PLOTS//R_FEDPROTEIN_meals_trend_descriptive_stats.csv")
 
 # Step 3: Run ANOVA for each time point, sex, and order
 anova_results <- aov_car(value ~ time_phase * Sex * Order + Error(Mouse/time_phase), data = long_data)
@@ -146,7 +146,7 @@ anova_results <- aov_car(value ~ time_phase * Sex * Order + Error(Mouse/time_pha
 
 
 # Save ANOVA results to CSV
-write.csv(as.data.frame(anova(anova_results)), "C://Users//hta031//Github//FEDProtein//results//Working_on_trend_data//R_FEDPROTEIN_meal_trend_anova_results.csv")
+write.csv(as.data.frame(anova(anova_results)), "C://Users//hta031//Github//FEDProtein//results//LINE_PLOTS//R_FEDPROTEIN_meal_trend_anova_results.csv")
 
 # Step 4: Post-hoc tests to compare each time point with others (including interactions with Sex and Order)
 posthoc_results <- emmeans(anova_results, pairwise ~ time_phase * Sex * Order, adjust= "Tukey")
@@ -161,7 +161,7 @@ posthoc_contrasts <- summary(posthoc_results$contrasts)
 posthoc_df <- as.data.frame(posthoc_contrasts)
 
 # Save post-hoc results to CSV (including time_phase, Sex, and Order)
-write.csv(as.data.frame(posthoc_results$contrasts), "C://Users//hta031//Github//FEDProtein//results//Working_on_trend_data//R_FEDPROTEIN_meals_trend_posthoc_results.csv")
+write.csv(as.data.frame(posthoc_results$contrasts), "C://Users//hta031//Github//FEDProtein//results//LINE_PLOTS//R_FEDPROTEIN_meals_trend_posthoc_results.csv")
 
 
 
@@ -178,11 +178,11 @@ library(emmeans)
 library(ggplot2)
 
 # Load the dataset
-data <- read.csv("C:\\Users\\hta031\\Github\\FEDProtein\\results\\Working_on_trend_data\\mega_meals_trend.csv")
+data <- read.csv("C:\\Users\\hta031\\Github\\FEDProtein\\results\\LINE_PLOTS\\mega_meals_trend.csv")
 
 # Step 1: Reshape the data
 long_data <- data %>%
-  pivot_longer(cols = starts_with(c("G", "NR", "PR")),
+  pivot_longer(cols = starts_with(c("NR", "PR")),
                names_to = "time_phase",
                values_to = "value")
 
@@ -194,7 +194,7 @@ descriptive_stats <- long_data %>%
             n = n())
 
 # Save descriptive statistics to CSV
-write.csv(descriptive_stats, "C://Users//hta031//Github//FEDProtein//results//Working_on_trend_data//R_FEDPROTEIN_mega_meals_trend_descriptive_stats.csv")
+write.csv(descriptive_stats, "C://Users//hta031//Github//FEDProtein//results//LINE_PLOTS//R_FEDPROTEIN_mega_meals_trend_descriptive_stats.csv")
 
 # Step 3: Run ANOVA for each time point, sex, and order
 anova_results <- aov_car(value ~ time_phase * Sex * Order + Error(Mouse/time_phase), data = long_data)
@@ -204,7 +204,7 @@ anova_results <- aov_car(value ~ time_phase * Sex * Order + Error(Mouse/time_pha
 
 
 # Save ANOVA results to CSV
-write.csv(as.data.frame(anova(anova_results)), "C://Users//hta031//Github//FEDProtein//results//Working_on_trend_data//R_FEDPROTEIN_mega_meal_trend_anova_results.csv")
+write.csv(as.data.frame(anova(anova_results)), "C://Users//hta031//Github//FEDProtein//results//LINE_PLOTS//R_FEDPROTEIN_mega_meal_trend_anova_results.csv")
 
 # Step 4: Post-hoc tests to compare each time point with others (including interactions with Sex and Order)
 posthoc_results <- emmeans(anova_results, pairwise ~ time_phase * Sex * Order, adjust= "Tukey")
@@ -219,5 +219,5 @@ posthoc_contrasts <- summary(posthoc_results$contrasts)
 posthoc_df <- as.data.frame(posthoc_contrasts)
 
 # Save post-hoc results to CSV (including time_phase, Sex, and Order)
-write.csv(as.data.frame(posthoc_results$contrasts), "C://Users//hta031//Github//FEDProtein//results//Working_on_trend_data//R_FEDPROTEIN_mega_meals_trend_posthoc_results.csv")
+write.csv(as.data.frame(posthoc_results$contrasts), "C://Users//hta031//Github//FEDProtein//results//LINE_PLOTS//R_FEDPROTEIN_mega_meals_trend_posthoc_results.csv")
 

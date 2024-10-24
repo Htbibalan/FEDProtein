@@ -1,238 +1,5 @@
 
 
-################################################################################
-
-
-
-
-# Load necessary libraries
-library(tidyverse)  # Includes dplyr and ggplot2
-library(reshape2)   # For melt function
-library(car)        # For Anova function
-
-# Load the data
-data <- read.csv("C:/Users/hta031/Github/FEDProtein/results/Total_pellets_per_phase_stats/total_pellet_per_phase.csv")
-
-# Check column names to ensure they match what is used in the code
-colnames(data)
-
-# Step 1: Descriptive statistics for PR and NR phases grouped by Sex and Order
-desc_stats <- data %>%
-  group_by(Sex, Order) %>%
-  summarise(
-    PR_mean = mean(`PR Pellets`, na.rm = TRUE),
-    PR_sd = sd(`PR Pellets`, na.rm = TRUE),
-    PR_min = min(`PR Pellets`, na.rm = TRUE),
-    PR_max = max(`PR Pellets`, na.rm = TRUE),
-    PR_median = median(`PR Pellets`, na.rm = TRUE),
-    NR_mean = mean(`NR Pellets`, na.rm = TRUE),
-    NR_sd = sd(`NR Pellets`, na.rm = TRUE),
-    NR_min = min(`NR Pellets`, na.rm = TRUE),
-    NR_max = max(`NR Pellets`, na.rm = TRUE),
-    NR_median = median(`NR Pellets`, na.rm = TRUE)
-  )
-
-# Save descriptive stats to CSV
-write.csv(desc_stats, "C:/Users/hta031/Github/FEDProtein/results/Total_pellets_per_phase_stats/descriptive_stats.csv", row.names = FALSE)
-
-# Print descriptive stats
-print(desc_stats)
-
-# Step 2: Reshape the data to long format for ANOVA
-data_long <- melt(data, id.vars = c("Mouse.ID", "Sex", "Order"),
-                  measure.vars = c("PR.Pellets", "NR.Pellets"),
-                  variable.name = "Diet_Phase", value.name = "Pellets")
-
-# Step 3: Run ANOVA
-anova_model <- aov(Pellets ~ Sex * Order * Diet_Phase, data = data_long)
-anova_results <- Anova(anova_model, type = 2)  # Type II ANOVA for factorial design
-
-# Save ANOVA results to CSV
-anova_table <- as.data.frame(anova_results)
-write.csv(anova_table, "C:/Users/hta031/Github/FEDProtein/results/Total_pellets_per_phase_stats/anova_results.csv", row.names = FALSE)
-
-# Print ANOVA results
-print(anova_results)
-
-# Step 4: Post-hoc tests using Tukey HSD
-tukey_test <- TukeyHSD(anova_model, "Diet_Phase")
-tukey_table <- as.data.frame(tukey_test$Diet_Phase)
-
-# Save Tukey test results to CSV
-write.csv(tukey_table, "C:/Users/hta031/Github/FEDProtein/results/Total_pellets_per_phase_stats/tukey_results.csv", row.names = FALSE)
-
-# Print Tukey test results
-print(tukey_test)
-
-# Step 5: Post-hoc Holm test (pairwise t-tests with Holm adjustment)
-pairwise_results <- pairwise.t.test(data_long$Pellets, 
-                                    interaction(data_long$Sex, data_long$Order, data_long$Diet_Phase), 
-                                    p.adjust.method = "holm")
-
-# Save Holm test results to CSV
-holm_table <- as.data.frame(pairwise_results$p.value)
-write.csv(holm_table, "C:/Users/hta031/Github/FEDProtein/results/Total_pellets_per_phase_stats/holm_results.csv", row.names = FALSE)
-
-# Print Holm test results
-print(pairwise_results)
-
-
-
-
-
-
-################################################################################################
-# Load necessary libraries
-library(tidyverse)  # Includes dplyr and ggplot2
-library(reshape2)   # For melt function
-library(car)        # For Anova function
-
-# Load the data
-data <- read.csv("C:/Users/hta031/Github/FEDProtein/results/Total_pellets_per_phase_stats/total_pellet_per_phase.csv")
-
-# Check column names to ensure they match what is used in the code
-colnames(data)
-
-# Step 1: Descriptive statistics for PR and NR phases grouped by Sex and Order
-desc_stats <- data %>%
-  group_by(Sex, Order) %>%
-  summarise(
-    PR_mean = mean(`PR Pellets`, na.rm = TRUE),
-    PR_sd = sd(`PR Pellets`, na.rm = TRUE),
-    PR_min = min(`PR Pellets`, na.rm = TRUE),
-    PR_max = max(`PR Pellets`, na.rm = TRUE),
-    PR_median = median(`PR Pellets`, na.rm = TRUE),
-    NR_mean = mean(`NR Pellets`, na.rm = TRUE),
-    NR_sd = sd(`NR Pellets`, na.rm = TRUE),
-    NR_min = min(`NR Pellets`, na.rm = TRUE),
-    NR_max = max(`NR Pellets`, na.rm = TRUE),
-    NR_median = median(`NR Pellets`, na.rm = TRUE)
-  )
-
-# Save descriptive stats to CSV
-write.csv(desc_stats, "C:/Users/hta031/Github/FEDProtein/results/Total_pellets_per_phase_stats/descriptive_stats.csv", row.names = FALSE)
-
-# Print descriptive stats
-print(desc_stats)
-
-# Step 2: Reshape the data to long format for ANOVA
-data_long <- melt(data, id.vars = c("Mouse.ID", "Sex", "Order"),
-                  measure.vars = c("PR.Pellets", "NR.Pellets"),
-                  variable.name = "Diet_Phase", value.name = "Pellets")
-
-# Step 3: Run ANOVA
-anova_model <- aov(Pellets ~ Sex * Order * Diet_Phase, data = data_long)
-anova_results <- Anova(anova_model, type = 2)  # Type II ANOVA for factorial design
-
-# Include the group labels in the ANOVA table
-anova_table <- as.data.frame(anova_results)
-anova_table$Factor <- rownames(anova_table)
-rownames(anova_table) <- NULL
-
-# Save ANOVA results to CSV
-write.csv(anova_table, "C:/Users/hta031/Github/FEDProtein/results/Total_pellets_per_phase_stats/anova_results_with_groups.csv", row.names = FALSE)
-
-# Print ANOVA results
-print(anova_results)
-
-# Step 4: Post-hoc tests using Tukey HSD
-tukey_test <- TukeyHSD(anova_model, "Diet_Phase")
-tukey_table <- as.data.frame(tukey_test$Diet_Phase)
-
-# Add group labels to Tukey results
-tukey_table$Comparison <- rownames(tukey_table)
-rownames(tukey_table) <- NULL
-
-# Save Tukey test results to CSV
-write.csv(tukey_table, "C:/Users/hta031/Github/FEDProtein/results/Total_pellets_per_phase_stats/tukey_results_with_groups.csv", row.names = FALSE)
-
-# Print Tukey test results
-print(tukey_test)
-
-# Step 5: Post-hoc Holm test (pairwise t-tests with Holm adjustment)
-pairwise_results <- pairwise.t.test(data_long$Pellets, 
-                                    interaction(data_long$Sex, data_long$Order, data_long$Diet_Phase), 
-                                    p.adjust.method = "holm")
-
-# Extract and format Holm test results with group labels
-holm_table <- as.data.frame(pairwise_results$p.value)
-holm_table$Comparison <- rownames(holm_table)
-rownames(holm_table) <- NULL
-
-# Save Holm test results to CSV
-write.csv(holm_table, "C:/Users/hta031/Github/FEDProtein/results/Total_pellets_per_phase_stats/holm_results_with_groups.csv", row.names = FALSE)
-
-# Print Holm test results
-print(pairwise_results)
-
-
-
-
-############################# making sure Tukey is conduced correctly###################
-
-# Load necessary libraries
-library(tidyverse)
-library(reshape2)
-library(car)
-library(multcomp)
-
-# Load the data
-data <- read.csv("C:/Users/hta031/Github/FEDProtein/results/Total_pellets_per_phase_stats/total_pellet_per_phase.csv")
-
-# Reshape the data to long format for ANOVA
-data_long <- melt(data, id.vars = c("Mouse.ID", "Sex", "Order"),
-                  measure.vars = c("PR.Pellets", "NR.Pellets"),
-                  variable.name = "Diet_Phase", value.name = "Pellets")
-
-# Run ANOVA with interaction between Sex, Order, and Diet_Phase
-anova_model <- aov(Pellets ~ Sex * Order * Diet_Phase, data = data_long)
-
-# Create an interaction term between Sex, Order, and Diet_Phase
-data_long$interaction_term <- interaction(data_long$Sex, data_long$Order, data_long$Diet_Phase)
-
-# Apply Tukey HSD to the interaction term
-tukey_test <- TukeyHSD(aov(Pellets ~ interaction_term, data = data_long))
-
-# Break the interaction term into separate components
-comparison_labels <- str_split_fixed(rownames(tukey_test$interaction_term), "-", 2)
-group1 <- comparison_labels[, 1]
-group2 <- comparison_labels[, 2]
-
-# Convert Tukey test results to a data frame and add group labels
-tukey_table <- as.data.frame(tukey_test$interaction_term)
-tukey_table$Group1 <- group1
-tukey_table$Group2 <- group2
-
-# Save the results with group labels to a CSV file
-write.csv(tukey_table, "C:/Users/hta031/Github/FEDProtein/results/Total_pellets_per_phase_stats/tukey_results_with_group_labels.csv", row.names = FALSE)
-
-# Print Tukey test results with group labels
-print(tukey_table)
-
-
-######################## ANOVA shows an Order is significant, but posthoc tests do not confrim this.####################
-######here is the code just to look at averages########
-# Load necessary libraries
-library(tidyverse)
-
-# Load the data
-data <- read.csv("C:/Users/hta031/Github/FEDProtein/results/Total_pellets_per_phase_stats/total_pellet_per_phase.csv")
-
-# Reshape the data to long format
-data_long <- melt(data, id.vars = c("Mouse.ID", "Sex", "Order"),
-                  measure.vars = c("PR.Pellets", "NR.Pellets"),
-                  variable.name = "Diet_Phase", value.name = "Pellets")
-
-# Calculate the mean pellet intake by Sex, Order, and Diet Phase
-order_sex_means <- data_long %>%
-  group_by(Sex, Order, Diet_Phase) %>%
-  summarise(mean_pellets = mean(Pellets, na.rm = TRUE),
-            sd_pellets = sd(Pellets, na.rm = TRUE),
-            n = n())
-
-# Print the means for each group
-print(order_sex_means)
-
 
 
 # ###########Key Observations:
@@ -257,3 +24,87 @@ print(order_sex_means)
 
 
 # "The sequence of diet presentation (Order) significantly affected overall pellet intake (ANOVA, p < 0.05). While pairwise comparisons between diet phases within groups did not reach statistical significance, male mice in Order 2 showed a trend of increased pellet intake in the NR phase."
+
+
+
+
+
+
+
+
+###############################################################################################
+##################################### LAST UPDATE  #############################################
+###############################################################################################
+
+
+
+# Load necessary libraries
+library(tidyverse)
+library(reshape2)
+library(car)  # For ANOVA
+library(multcomp)  # For Tukey and Holm post-hoc tests
+
+# Load the data
+data <- read.csv("C:/Users/hta031/Github/FEDProtein/results/Total_pellets_per_phase_stats/total_pellet_per_phase.csv")
+
+# Reshape the data to long format
+data_long <- melt(data, id.vars = c("Mouse.ID", "Sex", "Order"),
+                  measure.vars = c("NR", "PR"),
+                  variable.name = "Diet_Phase", value.name = "Total_Parameters")
+
+# Step 1: Descriptive statistics
+desc_stats <- data_long %>%
+  group_by(Sex, Order, Diet_Phase) %>%
+  summarise(
+    mean_total_parameters = mean(Total_Parameters, na.rm = TRUE),
+    sd_total_parameters = sd(Total_Parameters, na.rm = TRUE),
+    count = n()
+  )
+
+# Save descriptive statistics to CSV
+write.csv(desc_stats, "C:/Users/hta031/Github/FEDProtein/results/Total_pellets_per_phase_stats/TOTAL_PHASE_STATS/descriptive_TOTAL_PHASE_PELLETS.csv", row.names = FALSE)
+
+# Step 2: Run ANOVA with grouping information
+anova_model <- aov(Total_Parameters ~ Sex * Order * Diet_Phase, data = data_long)
+anova_results <- Anova(anova_model, type = 2)
+
+# Create ANOVA table with grouping information
+anova_table <- data.frame(
+  Factor = rownames(anova_results),
+  anova_results
+)
+
+# Save ANOVA results to CSV
+write.csv(anova_table, "C:/Users/hta031/Github/FEDProtein/results/Total_pellets_per_phase_stats/TOTAL_PHASE_STATS/anova_TOTAL_PHASE_PELLETS.csv", row.names = FALSE)
+
+# Step 3: Tukey HSD post-hoc test
+# Create interaction term for group comparisons
+data_long$interaction_term <- interaction(data_long$Sex, data_long$Order, data_long$Diet_Phase)
+
+# Perform Tukey HSD test on the interaction term
+tukey_test <- TukeyHSD(aov(Total_Parameters ~ interaction_term, data = data_long))
+tukey_table <- as.data.frame(tukey_test$interaction_term)
+
+# Add group information to the Tukey results
+comparison_labels <- str_split_fixed(rownames(tukey_test$interaction_term), "-", 2)
+tukey_table$Group1 <- comparison_labels[, 1]
+tukey_table$Group2 <- comparison_labels[, 2]
+
+# Save Tukey HSD results to CSV with group labels
+write.csv(tukey_table, "C:/Users/hta031/Github/FEDProtein/results/Total_pellets_per_phase_stats/TOTAL_PHASE_STATS/tukey_TOTAL_PHASE.csv", row.names = FALSE)
+
+# Step 4: Holm post-hoc test
+# Perform pairwise t-tests with Holm correction
+holm_test <- pairwise.t.test(data_long$Total_Parameters, data_long$interaction_term, p.adjust.method = "holm")
+
+# Extract and save Holm test results to CSV
+holm_table <- as.data.frame(holm_test$p.value)
+holm_table$Comparison <- rownames(holm_table)
+write.csv(holm_table, "C:/Users/hta031/Github/FEDProtein/results/Total_pellets_per_phase_stats/TOTAL_PHASE_STATS/holm_TOTAL_PHASE_PELLETS.csv", row.names = FALSE)
+
+# Print summary of results
+print(desc_stats)
+print(anova_table)
+print(tukey_table)
+print(holm_table)
+
