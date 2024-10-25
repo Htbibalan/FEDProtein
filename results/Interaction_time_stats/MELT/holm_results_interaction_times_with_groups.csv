@@ -1,0 +1,8 @@
+"F.1.PR","M.1.PR","F.2.PR","M.2.PR","F.1.NR","M.1.NR","F.2.NR","Comparison"
+1,NA,NA,NA,NA,NA,NA,"M.1.PR"
+1,1,NA,NA,NA,NA,NA,"F.2.PR"
+1,1,1,NA,NA,NA,NA,"M.2.PR"
+1,1,1,1,NA,NA,NA,"F.1.NR"
+1,1,1,1,1,NA,NA,"M.1.NR"
+1,1,1,1,1,1,NA,"F.2.NR"
+1,1,1,1,1,0.396499067186563,1,"M.2.NR"
