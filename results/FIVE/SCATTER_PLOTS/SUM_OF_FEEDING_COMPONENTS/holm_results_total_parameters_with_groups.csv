@@ -1,0 +1,8 @@
+"F.1.Total.NR.Parameters","M.1.Total.NR.Parameters","F.2.Total.NR.Parameters","M.2.Total.NR.Parameters","F.1.Total.PR.Parameters","M.1.Total.PR.Parameters","F.2.Total.PR.Parameters","Comparison"
+1,NA,NA,NA,NA,NA,NA,"M.1.Total.NR.Parameters"
+1,1,NA,NA,NA,NA,NA,"F.2.Total.NR.Parameters"
+1,1,1,NA,NA,NA,NA,"M.2.Total.NR.Parameters"
+1,1,1,1,NA,NA,NA,"F.1.Total.PR.Parameters"
+1,1,1,1,1,NA,NA,"M.1.Total.PR.Parameters"
+0.318512345391271,0.0608684383189184,0.288840094943377,0.0803909057702048,1,0.330801263874917,NA,"F.2.Total.PR.Parameters"
+0.273586210997733,0.0446698752530792,0.242142087834095,0.0608684383189184,1,0.28264217296788,1,"M.2.Total.PR.Parameters"

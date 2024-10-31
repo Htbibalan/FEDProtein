@@ -1,0 +1,9 @@
+"Sex","Order","Diet_Phase","mean_total_parameters","sd_total_parameters","count"
+"F",1,"Total.NR.Parameters",425.2,181.424088808515,5
+"F",1,"Total.PR.Parameters",497.4,181.705255840331,5
+"F",2,"Total.NR.Parameters",429,73.6831052548683,6
+"F",2,"Total.PR.Parameters",584.5,43.047648019375,6
+"M",1,"Total.NR.Parameters",387.333333333333,60.268289063708,6
+"M",1,"Total.PR.Parameters",434.833333333333,107.337629313613,6
+"M",2,"Total.NR.Parameters",395.166666666667,41.5904636505373,6
+"M",2,"Total.PR.Parameters",592,75.4559474130436,6
