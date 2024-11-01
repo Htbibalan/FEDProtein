@@ -993,16 +993,6 @@ print(tukey_table)
 print(holm_table)
 
 
-
-
-
-
-
-
-
-
-
-
 ############################################################################################################
 ############################################################################################################
 ################################### PELLETS_PER_PHASE##########################################################
@@ -1458,3 +1448,51 @@ print(desc_stats)
 print(anova_table)
 print(tukey_table)
 print(holm_table)
+
+
+
+
+
+############################################################################################################
+########################################## PREFERENCE RATIO #################################################
+################################################################
+
+# Load necessary libraries
+library(tidyverse)
+library(ggplot2)
+library(car)     # For ANOVA
+library(emmeans) # For post hoc tests
+
+# Define file paths
+input_file <- "C:/Users/hta031/Github/FEDProtein/results/FIVE/SCATTER_PLOTS/PREFERENCE/preference_ratios.csv"
+output_file <- "C:/Users/hta031/Github/FEDProtein/results/FIVE/SCATTER_PLOTS/PREFERENCE/preference_ratios_analysis_results.csv"
+
+# Load the data
+data <- read.csv(input_file)
+
+# Convert relevant columns to factors for ANOVA
+data$order <- as.factor(data$order)
+data$sex <- as.factor(data$sex)
+
+# Perform two-way ANOVA on preference_ratio by Order and Sex
+anova_result <- aov(preference_ratio ~ order * sex, data = data)
+anova_summary <- summary(anova_result)
+
+# Post hoc tests (if interaction or main effects are significant)
+posthoc_results <- NULL
+if (anova_summary[[1]]$`Pr(>F)`[3] < 0.05 || anova_summary[[1]]$`Pr(>F)`[1] < 0.05 || anova_summary[[1]]$`Pr(>F)`[2] < 0.05) {
+    emmeans_result <- emmeans(anova_result, ~ order * sex)
+    posthoc_results <- pairs(emmeans_result)
+}
+
+# Combine ANOVA summary and post hoc results into a dataframe for export
+anova_table <- broom::tidy(anova_result)
+posthoc_table <- if (!is.null(posthoc_results)) broom::tidy(posthoc_results) else data.frame()
+
+# Save the results to a CSV file
+results <- bind_rows(anova_table, posthoc_table)
+write.csv(results, output_file, row.names = FALSE)
+
+# Print summary of results
+print(anova_summary)
+if (!is.null(posthoc_results)) print(posthoc_results)
