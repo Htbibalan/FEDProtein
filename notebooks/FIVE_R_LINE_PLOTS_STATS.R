@@ -563,3 +563,57 @@ write.csv(posthoc_tukey_df, "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIV
 posthoc_holm <- emmeans(anova_results, pairwise ~ time_phase * Sex * Order, adjust = "holm")
 posthoc_holm_df <- as.data.frame(summary(posthoc_holm$contrasts))
 write.csv(posthoc_holm_df, "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\Bodyweight\\w_trend_posthoc_holm_results.csv")
+
+
+
+
+
+
+###############################################################################################################################################################################################
+############################################################################ HOARDING #################################################################################################
+###############################################################################################################################################################################################
+
+
+
+library(tidyr)
+library(dplyr)
+library(afex)
+library(emmeans)
+library(ggplot2)
+
+# Load the dataset
+data <- read.csv("C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\Hoarding\\HOARDING.csv")
+
+# Step 1: Reshape the data
+long_data <- data %>%
+  pivot_longer(cols = starts_with(c("NR", "PR")),
+               names_to = "time_phase",
+               values_to = "value")
+
+# Step 2: Generate Descriptive Statistics
+descriptive_stats <- long_data %>%
+  group_by(time_phase, Sex, Order) %>%
+  summarise(mean_value = mean(value, na.rm = TRUE),
+            sd_value = sd(value, na.rm = TRUE),
+            n = n())
+
+# Save descriptive statistics to CSV
+write.csv(descriptive_stats, "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\Hoarding\\h_trend_descriptive_stats.csv")
+
+# Step 3: Run ANOVA for each time point, sex, and order
+anova_results <- aov_car(value ~ time_phase * Sex * Order + Error(Mouse/time_phase), data = long_data)
+
+# Save ANOVA results to CSV
+write.csv(as.data.frame(anova(anova_results)), "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\Hoarding\\h_trend_anova_results.csv")
+
+# Step 4: Post-hoc tests with Tukey adjustment
+posthoc_tukey <- emmeans(anova_results, pairwise ~ time_phase * Sex * Order, adjust = "tukey")
+posthoc_tukey_df <- as.data.frame(summary(posthoc_tukey$contrasts))
+write.csv(posthoc_tukey_df, "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\Hoarding\\h_trend_posthoc_tukey_results.csv")
+
+# Step 5: Post-hoc tests with Holm adjustment
+posthoc_holm <- emmeans(anova_results, pairwise ~ time_phase * Sex * Order, adjust = "holm")
+posthoc_holm_df <- as.data.frame(summary(posthoc_holm$contrasts))
+write.csv(posthoc_holm_df, "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\Hoarding\\h_trend_posthoc_holm_results.csv")
+
+
