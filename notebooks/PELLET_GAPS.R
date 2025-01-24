@@ -402,3 +402,93 @@ print(logistic_summary)
 logistic_coeffs <- as.data.frame(logistic_summary$coefficients)
 write.csv(logistic_coeffs, "C:/Users/hta031/Github/FEDProtein/results/MEAL_DEF_PELLET_GAP_TIME/L_R_logistic_regression_results.csv", row.names = TRUE)
 
+
+
+
+
+
+###########################################################################################
+###################UPDATE JAN 2025#######################################################
+
+##############################################################################
+##       COMBINED MALE & FEMALE (Order=1, NR phase) Time_Gap Analysis       ##
+##############################################################################
+
+# 1) Load necessary libraries
+required_pkgs <- c("dplyr", "ggplot2", "car", "multcomp")
+installed <- rownames(installed.packages())
+
+for (pkg in required_pkgs) {
+  if (!pkg %in% installed) {
+    install.packages(pkg)
+  }
+  library(pkg, character.only = TRUE)
+}
+
+# 2) Read in the dataset
+data_file <- "C:/Users/hta031/Github/FEDProtein/results/MEAL_DEF_PELLET_GAP_TIME/feeding_time_gaps_categorized.csv"
+data <- read.csv(data_file)
+
+# 3) Convert columns to factors if needed
+data$Current_Size <- as.factor(data$Current_Size)
+data$Next_Size    <- as.factor(data$Next_Size)
+data$Diet_Phase   <- as.factor(data$Diet_Phase)
+data$Sex          <- as.factor(data$Sex)
+data$Order        <- as.factor(data$Order)
+
+# 4) Filter the data:
+#    - Keep only rows where Order == 1
+#    - Keep only rows where Diet_Phase == "NR"
+#    (Sex is NOT filtered out, so it combines males & females)
+combined_data <- data %>%
+  filter(Order == 1 & Diet_Phase == "NR")
+
+# 5) Create output directory for results
+output_dir <- "C:/Users/hta031/Github/FEDProtein/results/MEAL_DEF_PELLET_GAP_TIME/"
+if (!dir.exists(output_dir)) {
+  dir.create(output_dir, recursive = TRUE)
+}
+
+# 6) Descriptive statistics by Current_Size x Next_Size
+grouped_stats <- combined_data %>%
+  group_by(Current_Size, Next_Size) %>%
+  summarise(
+    Mean_Time_Gap = mean(Time_Gap, na.rm = TRUE),
+    SD_Time_Gap   = sd(Time_Gap, na.rm = TRUE),
+    Count         = n(),
+    .groups       = "drop"
+  )
+
+# Save descriptive stats
+write.csv(grouped_stats,
+          file = paste0(output_dir, "combined_descriptive_stats.csv"),
+          row.names = FALSE)
+
+# 7) One-way ANOVA:
+#    - We use Current_Size as the factor of interest.
+#    - Time_Gap is the response variable.
+anova_model <- aov(Time_Gap ~ Current_Size, data = combined_data)
+
+# 8) Summarize the ANOVA and save
+anova_summary <- summary(anova_model)
+anova_outfile <- paste0(output_dir, "combined_anova_results.txt")
+sink(anova_outfile)
+print(anova_summary)
+sink()
+cat("ANOVA results saved to:", anova_outfile, "\n\n")
+
+# 9) Post-hoc Test (pairwise comparisons by Current_Size)
+#    Using glht() from multcomp with Tukey contrasts and Holm adjustment
+posthoc <- glht(anova_model, linfct = mcp(Current_Size = "Tukey"))
+posthoc_summary <- summary(posthoc, test = adjusted("holm"))
+
+# 10) Save post-hoc results
+posthoc_outfile <- paste0(output_dir, "combined_posthoc_holm_results.txt")
+sink(posthoc_outfile)
+print(posthoc_summary)
+sink()
+cat("Post-hoc comparisons saved to:", posthoc_outfile, "\n\n")
+
+# 11) (Optional) Print the results to the console as well
+print(anova_summary)
+print(posthoc_summary)
