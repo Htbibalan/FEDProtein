@@ -1,0 +1,33 @@
+=== DESCRIPTIVE STATISTICS ( avg_breakpoint ) ===
+# A tibble: 4 × 6
+  order             pellet_type     N  Mean    SD   SEM
+  <fct>             <fct>       <int> <dbl> <dbl> <dbl>
+1 ProteinRestricted PR              6 18.7   2.65 1.08 
+2 ProteinRestricted RICH            6  8.80  3.24 1.32 
+3 NonRestricted     PR              6 17.7   2.40 0.981
+4 NonRestricted     RICH            6  5.52  2.56 1.04 
+
+
+=== ANOVA SUMMARY ( avg_breakpoint ) ===
+
+Univariate Type III Repeated-Measures ANOVA Assuming Sphericity
+
+                  Sum Sq num Df Error SS den Df  F value    Pr(>F)    
+(Intercept)       3847.8      1   73.515     10 523.4052 5.744e-10 ***
+order               27.4      1   73.515     10   3.7251   0.08243 .  
+pellet_type        727.2      1   75.549     10  96.2523 1.893e-06 ***
+order:pellet_type    7.9      1   75.549     10   1.0430   0.33121    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+
+=== POST-HOC PAIRWISE COMPARISONS (Holm,  avg_breakpoint ) ===
+ contrast                                      estimate   SE df t.ratio p.value
+ ProteinRestricted PR - NonRestricted PR           0.99 1.46 10   0.678  0.5131
+ ProteinRestricted PR - ProteinRestricted RICH     9.86 1.59 10   6.215  0.0004
+ ProteinRestricted PR - NonRestricted RICH        13.15 1.58 10   8.340  <.0001
+ NonRestricted PR - ProteinRestricted RICH         8.87 1.58 10   5.629  0.0007
+ NonRestricted PR - NonRestricted RICH            12.15 1.59 10   7.659  0.0001
+ ProteinRestricted RICH - NonRestricted RICH       3.28 1.68 10   1.949  0.1597
+
+P value adjustment: holm method for 6 tests 
