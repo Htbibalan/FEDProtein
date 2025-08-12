@@ -194,6 +194,57 @@ posthoc_holm_df <- as.data.frame(summary(posthoc_holm_results$contrasts))
 write.csv(posthoc_holm_df, "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\SNACK\\COMBINE_snacks_trend_posthoc_results_Holm.csv")
 
 
+###############################################################################################################################################################################################
+############################################################################ SNACKS Frequency COMBINED #################################################################################################
+###############################################################################################################################################################################################
+
+
+library(tidyr)
+library(dplyr)
+library(afex)
+library(emmeans)
+library(ggplot2)
+
+# Load the dataset
+data <- read.csv("C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\SNACK\\snack_freq_per_day\\snack_freq_realigned_FINAL.csv")
+
+# Step 1: Reshape the data
+long_data <- data %>%
+  pivot_longer(cols = starts_with(c("NR", "PR")),
+               names_to = "time_phase",
+               values_to = "value")
+
+# Step 2: Generate Descriptive Statistics
+descriptive_stats <- long_data %>%
+  group_by(time_phase, Order) %>%
+  summarise(mean_value = mean(value, na.rm = TRUE),
+            sd_value = sd(value, na.rm = TRUE),
+            n = n())
+
+# Save descriptive statistics to CSV
+write.csv(descriptive_stats, "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\SNACK\\snack_freq_per_day\\COMBINE_snacksFreq_trend_descriptive_stats.csv")
+
+# Step 3: Run ANOVA for each time point, sex, and order
+anova_results <- aov_car(value ~ time_phase * Order + Error(Mouse/time_phase), data = long_data)
+
+# Save ANOVA results to CSV
+write.csv(as.data.frame(anova(anova_results)), "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\SNACK\\snack_freq_per_day\\COMBINE_snacksFreq_trend_anova_results.csv")
+
+# Step 4: Post-hoc tests with Tukey and Holm adjustments
+# Tukey adjustment
+posthoc_tukey_results <- emmeans(anova_results, pairwise ~ time_phase * Order, adjust = "Tukey")
+posthoc_tukey_df <- as.data.frame(summary(posthoc_tukey_results$contrasts))
+
+# Save Tukey-adjusted post-hoc results to CSV
+write.csv(posthoc_tukey_df, "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\SNACK\\snack_freq_per_day\\COMBINE_snacksFreq_trend_posthoc_results_Tukey.csv")
+
+# Holm adjustment
+posthoc_holm_results <- emmeans(anova_results, pairwise ~ time_phase * Order, adjust = "holm")
+posthoc_holm_df <- as.data.frame(summary(posthoc_holm_results$contrasts))
+
+# Save Holm-adjusted post-hoc results to CSV
+write.csv(posthoc_holm_df, "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\SNACK\\snack_freq_per_day\\COMBINE_snacksFreq_trend_posthoc_results_Holm.csv")
+
 
 
 ###############################################################################################################################################################################################
@@ -256,7 +307,7 @@ library(emmeans)
 library(ggplot2)
 
 # Load the dataset
-data <- read.csv("C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\MEAL\\MEAL_per_day_trend.csv")
+data <- read.csv("C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\MEAL\\meals_per_day_trend.csv")
 
 # Step 1: Reshape the data
 long_data <- data %>%
@@ -294,6 +345,118 @@ posthoc_holm_df <- as.data.frame(summary(posthoc_holm_results$contrasts))
 
 # Save Holm-adjusted post-hoc results to CSV
 write.csv(posthoc_holm_df, "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\MEAL\\COMBINE_MEAL_trend_posthoc_results_Holm.csv")
+
+
+
+
+
+################################################################################################################################################################################################################# 
+######################## MEAL Frequency COMBINED #####################################################################################################
+###################################################################################################################################################################
+
+library(tidyr)
+library(dplyr)
+library(afex)
+library(emmeans)
+library(ggplot2)
+
+# Load the dataset
+data <- read.csv("C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\MEAL\\meal_freq_per_day\\meal_freq_realigned_FINAL.csv")
+
+# Step 1: Reshape the data
+long_data <- data %>%
+  pivot_longer(cols = starts_with(c("NR", "PR")),
+               names_to = "time_phase",
+               values_to = "value")
+
+# Step 2: Generate Descriptive Statistics
+descriptive_stats <- long_data %>%
+  group_by(time_phase, Order) %>%
+  summarise(mean_value = mean(value, na.rm = TRUE),
+            sd_value = sd(value, na.rm = TRUE),
+            n = n())
+
+# Save descriptive statistics to CSV
+write.csv(descriptive_stats, "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\MEAL\\meal_freq_per_day\\COMBINE_MEALFreq_trend_descriptive_stats.csv")
+
+# Step 3: Run ANOVA for each time point, sex, and order
+anova_results <- aov_car(value ~ time_phase * Order + Error(Mouse/time_phase), data = long_data)
+
+# Save ANOVA results to CSV
+write.csv(as.data.frame(anova(anova_results)), "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\MEAL\\meal_freq_per_day\\COMBINE_MEALFreq_trend_anova_results.csv")
+
+# Step 4: Post-hoc tests with Tukey and Holm adjustments
+# Tukey adjustment
+posthoc_tukey_results <- emmeans(anova_results, pairwise ~ time_phase  * Order, adjust = "Tukey")
+posthoc_tukey_df <- as.data.frame(summary(posthoc_tukey_results$contrasts))
+
+# Save Tukey-adjusted post-hoc results to CSV
+write.csv(posthoc_tukey_df, "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\MEAL\\meal_freq_per_day\\COMBINE_MEALFreq_trend_posthoc_results_Tukey.csv")
+
+# Holm adjustment
+posthoc_holm_results <- emmeans(anova_results, pairwise ~ time_phase * Order, adjust = "holm")
+posthoc_holm_df <- as.data.frame(summary(posthoc_holm_results$contrasts))
+
+# Save Holm-adjusted post-hoc results to CSV
+write.csv(posthoc_holm_df, "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\MEAL\\meal_freq_per_day\\COMBINE_MEALFreq_trend_posthoc_results_Holm.csv")
+
+
+
+
+
+################################################################################################################################################################################################################# 
+######################## MEAL size COMBINED #####################################################################################################
+###################################################################################################################################################################
+
+library(tidyr)
+library(dplyr)
+library(afex)
+library(emmeans)
+library(ggplot2)
+
+# Load the dataset
+data <- read.csv("C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\MEAL\\meal_size_per_day\\meal_size_realigned_FINAL.csv")
+
+# Step 1: Reshape the data
+long_data <- data %>%
+  pivot_longer(cols = starts_with(c("NR", "PR")),
+               names_to = "time_phase",
+               values_to = "value")
+
+# Step 2: Generate Descriptive Statistics
+descriptive_stats <- long_data %>%
+  group_by(time_phase, Order) %>%
+  summarise(mean_value = mean(value, na.rm = TRUE),
+            sd_value = sd(value, na.rm = TRUE),
+            n = n())
+
+# Save descriptive statistics to CSV
+write.csv(descriptive_stats, "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\MEAL\\meal_size_per_day\\COMBINE_MEALsize_trend_descriptive_stats.csv")
+
+# Step 3: Run ANOVA for each time point, sex, and order
+anova_results <- aov_car(value ~ time_phase * Order + Error(Mouse/time_phase), data = long_data)
+
+# Save ANOVA results to CSV
+write.csv(as.data.frame(anova(anova_results)), "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\MEAL\\meal_size_per_day\\COMBINE_MEALsize_trend_anova_results.csv")
+
+# Step 4: Post-hoc tests with Tukey and Holm adjustments
+# Tukey adjustment
+posthoc_tukey_results <- emmeans(anova_results, pairwise ~ time_phase  * Order, adjust = "Tukey")
+posthoc_tukey_df <- as.data.frame(summary(posthoc_tukey_results$contrasts))
+
+# Save Tukey-adjusted post-hoc results to CSV
+write.csv(posthoc_tukey_df, "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\MEAL\\meal_size_per_day\\COMBINE_MEALsize_trend_posthoc_results_Tukey.csv")
+
+# Holm adjustment
+posthoc_holm_results <- emmeans(anova_results, pairwise ~ time_phase * Order, adjust = "holm")
+posthoc_holm_df <- as.data.frame(summary(posthoc_holm_results$contrasts))
+
+# Save Holm-adjusted post-hoc results to CSV
+write.csv(posthoc_holm_df, "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\MEAL\\meal_size_per_day\\COMBINE_MEALsize_trend_posthoc_results_Holm.csv")
+
+
+
+
 
 
 ###############################################################################################################################################################################################
@@ -347,6 +510,105 @@ posthoc_holm_df <- as.data.frame(summary(posthoc_holm_results$contrasts))
 write.csv(posthoc_holm_df, "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\FEAST\\FEAST_trend_posthoc_results_Holm.csv")
 
 
+###############################################################################################################################################################################################
+############################################################################ FEAST Frequency BELOW #################################################################################################
+###############################################################################################################################################################################################
+
+library(tidyr)
+library(dplyr)
+library(afex)
+library(emmeans)
+library(ggplot2)
+
+# Load the dataset
+data <- read.csv("C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\FEAST\\feast_freq_per_day\\mega_meal_freq_realigned_FINAL.csv")
+
+# Step 1: Reshape the data
+long_data <- data %>%
+  pivot_longer(cols = starts_with(c("NR", "PR")),
+               names_to = "time_phase",
+               values_to = "value")
+
+# Step 2: Generate Descriptive Statistics
+descriptive_stats <- long_data %>%
+  group_by(time_phase, Sex, Order) %>%
+  summarise(mean_value = mean(value, na.rm = TRUE),
+            sd_value = sd(value, na.rm = TRUE),
+            n = n())
+
+# Save descriptive statistics to CSV
+write.csv(descriptive_stats, "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\FEAST\\feast_freq_per_day\\FEASTFreq_trend_descriptive_stats.csv")
+
+# Step 3: Run ANOVA for each time point, sex, and order
+anova_results <- aov_car(value ~ time_phase * Sex * Order + Error(Mouse/time_phase), data = long_data)
+
+# Save ANOVA results to CSV
+write.csv(as.data.frame(anova(anova_results)), "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\FEAST\\feast_freq_per_day\\FEASTFreq_trend_anova_results.csv")
+
+# Step 4: Post-hoc tests with Tukey and Holm adjustments
+# Tukey adjustment
+posthoc_tukey_results <- emmeans(anova_results, pairwise ~ time_phase * Sex * Order, adjust = "Tukey")
+posthoc_tukey_df <- as.data.frame(summary(posthoc_tukey_results$contrasts))
+
+# Save Tukey-adjusted post-hoc results to CSV
+write.csv(posthoc_tukey_df, "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\FEAST\\feast_freq_per_day\\FEASTFreq_trend_posthoc_results_Tukey.csv")
+
+# Holm adjustment
+posthoc_holm_results <- emmeans(anova_results, pairwise ~ time_phase * Sex * Order, adjust = "holm")
+posthoc_holm_df <- as.data.frame(summary(posthoc_holm_results$contrasts))
+
+# Save Holm-adjusted post-hoc results to CSV
+write.csv(posthoc_holm_df, "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\FEAST\\feast_freq_per_day\\FEASTFreq_trend_posthoc_results_Holm.csv")
+
+###############################################################################################################################################################################################
+############################################################################ FEAST SIZE BELOW #################################################################################################
+###############################################################################################################################################################################################
+
+library(tidyr)
+library(dplyr)
+library(afex)
+library(emmeans)
+library(ggplot2)
+
+# Load the dataset
+data <- read.csv("C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\FEAST\\feast_size_per_day\\mega_meal_size_realigned_FINAL.csv")
+
+# Step 1: Reshape the data
+long_data <- data %>%
+  pivot_longer(cols = starts_with(c("NR", "PR")),
+               names_to = "time_phase",
+               values_to = "value")
+
+# Step 2: Generate Descriptive Statistics
+descriptive_stats <- long_data %>%
+  group_by(time_phase, Sex, Order) %>%
+  summarise(mean_value = mean(value, na.rm = TRUE),
+            sd_value = sd(value, na.rm = TRUE),
+            n = n())
+
+# Save descriptive statistics to CSV
+write.csv(descriptive_stats, "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\FEAST\\feast_size_per_day\\FEASTSIZE_trend_descriptive_stats.csv")
+
+# Step 3: Run ANOVA for each time point, sex, and order
+anova_results <- aov_car(value ~ time_phase * Sex * Order + Error(Mouse/time_phase), data = long_data)
+
+# Save ANOVA results to CSV
+write.csv(as.data.frame(anova(anova_results)), "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\FEAST\\feast_size_per_day\\FEASTSIZE_trend_anova_results.csv")
+
+# Step 4: Post-hoc tests with Tukey and Holm adjustments
+# Tukey adjustment
+posthoc_tukey_results <- emmeans(anova_results, pairwise ~ time_phase * Sex * Order, adjust = "Tukey")
+posthoc_tukey_df <- as.data.frame(summary(posthoc_tukey_results$contrasts))
+
+# Save Tukey-adjusted post-hoc results to CSV
+write.csv(posthoc_tukey_df, "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\FEAST\\feast_size_per_day\\FEASTSIZE_trend_posthoc_results_Tukey.csv")
+
+# Holm adjustment
+posthoc_holm_results <- emmeans(anova_results, pairwise ~ time_phase * Sex * Order, adjust = "holm")
+posthoc_holm_df <- as.data.frame(summary(posthoc_holm_results$contrasts))
+
+# Save Holm-adjusted post-hoc results to CSV
+write.csv(posthoc_holm_df, "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\FEAST\\feast_size_per_day\\FEASTSIZE_trend_posthoc_results_Holm.csv")
 
 ###############################################################################################################################################################################################
 ############################################################################ FEAST COMBINED #################################################################################################
