@@ -1,0 +1,39 @@
+
+Study: anova_result ~ "EventSize"
+
+HSD Test for Count 
+
+Mean Square Error:  324.46 
+
+EventSize,  means
+
+            Count       std r       se Min Max   Q25  Q50    Q75
+Count_1  94.66667 47.798187 6 7.353684  45 163 63.50 77.0 129.50
+Count_10  8.00000  3.521363 6 7.353684   6  15  6.00  6.5   7.75
+Count_2  55.83333 23.120698 6 7.353684  31  89 36.50 54.0  70.75
+Count_3  62.66667 11.809601 6 7.353684  48  80 56.00 60.0  70.00
+Count_4  61.50000  8.455767 6 7.353684  49  70 56.50 62.5  68.50
+Count_5  49.83333 12.718753 6 7.353684  28  62 44.50 54.5  57.75
+Count_6  24.16667  4.875107 6 7.353684  17  30 21.25 25.0  27.25
+Count_7  15.66667  3.011091 6 7.353684  12  19 13.25 16.0  18.00
+Count_8   9.50000  1.760682 6 7.353684   7  12  8.50 10.0  10.00
+Count_9   5.50000  2.073644 6 7.353684   3   8  3.75  6.0   6.75
+
+Alpha: 0.05 ; DF Error: 50 
+Critical Value of Studentized Range: 4.681429 
+
+Minimun Significant Difference: 34.42575 
+
+Treatments with the same letter are not significantly different.
+
+            Count groups
+Count_1  94.66667      a
+Count_3  62.66667     ab
+Count_4  61.50000     ab
+Count_2  55.83333     bc
+Count_5  49.83333    bcd
+Count_6  24.16667    cde
+Count_7  15.66667     de
+Count_8   9.50000      e
+Count_10  8.00000      e
+Count_9   5.50000      e

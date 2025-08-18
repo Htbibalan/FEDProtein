@@ -1,0 +1,13 @@
+"","time_phase","sex","order","mean_value","sd_value","n"
+"1","grain_number_of_mega_meals","F",1,62.2,11.0317722964173,5
+"2","grain_number_of_mega_meals","F",2,56.6666666666667,15.8954920234218,6
+"3","grain_number_of_mega_meals","M",1,66.6666666666667,8.95916662791058,6
+"4","grain_number_of_mega_meals","M",2,53.3333333333333,11.2546286774228,6
+"5","nr_number_of_mega_meals","F",1,102.8,49.5146442984295,5
+"6","nr_number_of_mega_meals","F",2,107.833333333333,38.9328481704931,6
+"7","nr_number_of_mega_meals","M",1,112.666666666667,14.1797978358884,6
+"8","nr_number_of_mega_meals","M",2,159,42.3603588275642,6
+"9","pr_number_of_mega_meals","F",1,90,47.5552310476986,5
+"10","pr_number_of_mega_meals","F",2,53,13.2966161108757,6
+"11","pr_number_of_mega_meals","M",1,89.8333333333333,12.9833226358535,6
+"12","pr_number_of_mega_meals","M",2,73.8333333333333,25.6235568699325,6
