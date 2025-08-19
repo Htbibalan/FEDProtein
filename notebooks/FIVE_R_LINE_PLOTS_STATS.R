@@ -244,6 +244,26 @@ res_O2NRk_vs_O1PRk <- summary(contrast(em, cts_O2NRk_vs_O1PRk), adjust = "holm")
 write.csv(as.data.frame(res_O2NRk_vs_O1PRk),
           file.path(outdir, "SPEC_O2_NRk_vs_O1_PRk_matched_days.csv"),
           row.names = FALSE)
+# 4) NR0 (Order 1) vs every other day in Order 1
+#    -> NR0 vs PR0..PR6  and  NR0 vs NR1..NR6
+cts_NR0O1_vs_allO1 <- list()
+
+# NR0 vs PR0..PR6 (across to PR phase within Order 1)
+for (d in 0:6) {
+  name <- paste(fmt("NR","0","1"), "-", fmt("PR", as.character(d), "1"))
+  cts_NR0O1_vs_allO1[[name]] <- mkL(em, c("NR","0","1"), c("PR", as.character(d), "1"))
+}
+
+# NR0 vs NR1..NR6 (within NR phase, skip NR0 vs NR0)
+for (d in 1:6) {
+  name <- paste(fmt("NR","0","1"), "-", fmt("NR", as.character(d), "1"))
+  cts_NR0O1_vs_allO1[[name]] <- mkL(em, c("NR","0","1"), c("NR", as.character(d), "1"))
+}
+
+res_NR0O1_vs_allO1 <- summary(contrast(em, cts_NR0O1_vs_allO1), adjust = "holm")
+write.csv(as.data.frame(res_NR0O1_vs_allO1),
+          file.path(outdir, "SPEC_O1_NR0_vs_all_Order1_days.csv"),
+          row.names = FALSE)
 
 # # --- OPTIONAL: treat O1:PR0 as control and compare it to every O2 cell ---
 # do_ctrl_vs_all <- TRUE
@@ -577,6 +597,26 @@ write.csv(as.data.frame(res_O2NRk_vs_O1PRk),
           file.path(outdir, "SPEC_O2_NRk_vs_O1_PRk_matched_days.csv"),
           row.names = FALSE)
 
+# 4) NR0 (Order 1) vs every other day in Order 1
+#    -> NR0 vs PR0..PR6  and  NR0 vs NR1..NR6
+cts_NR0O1_vs_allO1 <- list()
+
+# NR0 vs PR0..PR6 (across to PR phase within Order 1)
+for (d in 0:6) {
+  name <- paste(fmt("NR","0","1"), "-", fmt("PR", as.character(d), "1"))
+  cts_NR0O1_vs_allO1[[name]] <- mkL(em, c("NR","0","1"), c("PR", as.character(d), "1"))
+}
+
+# NR0 vs NR1..NR6 (within NR phase, skip NR0 vs NR0)
+for (d in 1:6) {
+  name <- paste(fmt("NR","0","1"), "-", fmt("NR", as.character(d), "1"))
+  cts_NR0O1_vs_allO1[[name]] <- mkL(em, c("NR","0","1"), c("NR", as.character(d), "1"))
+}
+
+res_NR0O1_vs_allO1 <- summary(contrast(em, cts_NR0O1_vs_allO1), adjust = "holm")
+write.csv(as.data.frame(res_NR0O1_vs_allO1),
+          file.path(outdir, "SPEC_O1_NR0_vs_all_Order1_days.csv"),
+          row.names = FALSE)
 
 # === ALL pairwise comparisons across phase × day × Order (28 cells → 378 tests) ===
 em_cells <- emmeans(fit, ~ phase:day:Order)  # each combo as one level
@@ -1138,6 +1178,26 @@ for (d in 0:6) {
 res_O2NRk_vs_O1PRk <- summary(contrast(em, cts_O2NRk_vs_O1PRk), adjust = "holm")
 write.csv(as.data.frame(res_O2NRk_vs_O1PRk),
           file.path(outdir, "SPEC_O2_NRk_vs_O1_PRk_matched_days.csv"),
+          row.names = FALSE)
+# 4) NR0 (Order 1) vs every other day in Order 1
+#    -> NR0 vs PR0..PR6  and  NR0 vs NR1..NR6
+cts_NR0O1_vs_allO1 <- list()
+
+# NR0 vs PR0..PR6 (across to PR phase within Order 1)
+for (d in 0:6) {
+  name <- paste(fmt("NR","0","1"), "-", fmt("PR", as.character(d), "1"))
+  cts_NR0O1_vs_allO1[[name]] <- mkL(em, c("NR","0","1"), c("PR", as.character(d), "1"))
+}
+
+# NR0 vs NR1..NR6 (within NR phase, skip NR0 vs NR0)
+for (d in 1:6) {
+  name <- paste(fmt("NR","0","1"), "-", fmt("NR", as.character(d), "1"))
+  cts_NR0O1_vs_allO1[[name]] <- mkL(em, c("NR","0","1"), c("NR", as.character(d), "1"))
+}
+
+res_NR0O1_vs_allO1 <- summary(contrast(em, cts_NR0O1_vs_allO1), adjust = "holm")
+write.csv(as.data.frame(res_NR0O1_vs_allO1),
+          file.path(outdir, "SPEC_O1_NR0_vs_all_Order1_days.csv"),
           row.names = FALSE)
 
 
@@ -2919,6 +2979,216 @@ write.csv(posthoc_holm_df, "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE
 ###############################################################################################################################################################################
 ##################################################################### ##################################################################################
 
+# # --- Packages & options ---
+# library(tidyverse)
+# library(afex)
+# library(emmeans)
+# library(broom)
+
+# afex::afex_options(type = 3)                  # Type-III SS
+# options(contrasts = c("contr.sum","contr.poly"))
+
+# # --- Paths   ---
+# infile <- "C:/Users/hta031/Github/FEDProtein/results/FIVE/LINE_PLOTS/Bodyweight/BODYWEIGHT.csv"
+# outdir <- "C:/Users/hta031/Github/FEDProtein/results/FIVE/LINE_PLOTS/Bodyweight/RE_DO_BODYWEIGHT"
+# infile <- trimws(infile); outdir <- trimws(outdir)
+# if (!dir.exists(outdir)) dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
+
+# # --- Load & reshape (NR/PR + day parsed cleanly) ---
+# dat <- read.csv(infile)
+
+# long <- dat %>%
+#   pivot_longer(
+#     cols = matches("^(NR|PR)\\d+$"),
+#     names_to        = c("phase","day"),
+#     names_pattern   = "(NR|PR)(\\d+)",
+#     names_transform = list(day = as.integer),
+#     values_to       = "value"
+#   ) %>%
+#   mutate(
+#     day   = factor(day, levels = sort(unique(day))),
+#     phase = factor(phase, levels = c("NR","PR")),
+#     Order = factor(Order),
+#     Sex   = factor(Sex),
+#     Mouse = factor(Mouse)
+#   ) %>%
+#   drop_na(value)
+
+# # --- Descriptives per (Order × Sex × phase × day) ---
+# descriptive <- long %>%
+#   group_by(Order, Sex, phase, day) %>%
+#   summarise(n = sum(!is.na(value)),
+#             mean = mean(value, na.rm = TRUE),
+#             sd   = sd(value, na.rm = TRUE),
+#             .groups = "drop")
+# write.csv(descriptive, file.path(outdir, "Bodyweight_descriptives_by_Order_Sex_phase_day.csv"), row.names = FALSE)
+
+# # --- Repeated-measures ANOVA (Sex included) ---
+# fit <- aov_ez(
+#   id      = "Mouse",
+#   dv      = "value",
+#   within  = c("phase","day"),
+#   between = c("Order","Sex"),
+#   data    = long
+# )
+
+# anova_tab <- afex::nice(fit, es = "pes", correction = "GG")
+# write.csv(anova_tab, file.path(outdir, "Bodyweight_ANOVA_GG_with_Sex.csv"), row.names = FALSE)
+
+# # --- EMMs for all cells (phase × day × Order × Sex) ---
+# em <- emmeans(fit, ~ phase*day*Order*Sex)
+
+# # Save the grid (helps inspect labels; day may appear as X0..X6)
+# grid <- as.data.frame(em)[, c("phase","day","Order","Sex")]
+# write.csv(grid, file.path(outdir, "EMM_grid_Bodyweight_with_Sex.csv"), row.names = FALSE)
+
+# # --- Helper to build a contrast vector A - B (robust to 'X' in day labels) ---
+# # A, B are c(phase, day, Order, Sex) with day like "0","1","2", Sex like "M"/"F"
+# mkL4 <- function(em, A, B) {
+#   g <- as.data.frame(em)[, c("phase","day","Order","Sex")]
+#   g <- data.frame(lapply(g, function(x) trimws(as.character(x))), stringsAsFactors = FALSE)
+#   names(g) <- c("phase","day","Order","Sex")
+#   g$day_plain <- sub("^X", "", g$day)  # strip leading 'X' if present
+
+#   iA <- which(g$phase==A[1] & g$day_plain==A[2] & g$Order==A[3] & g$Sex==A[4])
+#   iB <- which(g$phase==B[1] & g$day_plain==B[2] & g$Order==B[3] & g$Sex==B[4])
+
+#   if (length(iA)!=1 || length(iB)!=1) {
+#     message("Could not find requested cells. First rows of the EMM grid:")
+#     print(utils::head(g, 12))
+#     stop(sprintf("Can't find cells:\n  A = %s\n  B = %s",
+#                  paste(A, collapse=","), paste(B, collapse=",")))
+#   }
+#   L <- rep(0, nrow(g)); L[iA] <- 1; L[iB] <- -1; L
+# }
+
+# # --- SPECIFIC CONTRASTS (Holm-adjusted), computed PER SEX -------------------------------------------------------
+# fmt <- function(phase, day, ord, sex) sprintf("%s%s Order%s Sex%s", phase, day, ord, sex)
+
+# sex_levels <- levels(long$Sex)  # typically c("M","F")
+
+# # Containers to optionally bind results across sexes (if you want single files later)
+# all_PR0_vs_allO2  <- list()
+# all_NR0_vs_NRO2   <- list()
+# all_PRk_vs_NRk    <- list()
+# all_NRk_vs_PRk    <- list()
+
+# for (sx in sex_levels) {
+
+#   # 1) PR0 (Order 2, Sex = sx) vs every other day in Order 2, Sex = sx
+#   cts_PR0O2_vs_allO2 <- list()
+#   for (d in 1:6) {
+#     name <- paste(fmt("PR","0","2", sx), "-", fmt("PR", as.character(d), "2", sx))
+#     cts_PR0O2_vs_allO2[[name]] <- mkL4(em, c("PR","0","2", sx), c("PR", as.character(d), "2", sx))
+#   }
+#   for (d in 0:6) {
+#     name <- paste(fmt("PR","0","2", sx), "-", fmt("NR", as.character(d), "2", sx))
+#     cts_PR0O2_vs_allO2[[name]] <- mkL4(em, c("PR","0","2", sx), c("NR", as.character(d), "2", sx))
+#   }
+#   res_PR0O2_vs_allO2 <- summary(contrast(em, cts_PR0O2_vs_allO2), adjust = "holm")
+#   res_PR0O2_vs_allO2 <- transform(as.data.frame(res_PR0O2_vs_allO2), Sex = sx)
+#   write.csv(res_PR0O2_vs_allO2,
+#             file.path(outdir, paste0("SPEC_O2_PR0_vs_all_Order2_days_Sex", sx, ".csv")),
+#             row.names = FALSE)
+#   all_PR0_vs_allO2[[sx]] <- res_PR0O2_vs_allO2
+
+#   # 2) NR0 (Order 2, Sex = sx) vs NR1..NR6 in Order 2, Sex = sx
+#   cts_NR0O2_vs_NR_O2 <- setNames(lapply(1:6, function(d)
+#     mkL4(em, c("NR","0","2", sx), c("NR", as.character(d), "2", sx))),
+#     paste0(fmt("NR","0","2", sx), " - ", fmt("NR","", "2", sx)) # label updated below
+#   )
+#   names(cts_NR0O2_vs_NR_O2) <- paste(fmt("NR","0","2", sx), "-", paste0("NR", 1:6, " Order2 Sex", sx))
+#   res_NR0O2_vs_NR_O2 <- summary(contrast(em, cts_NR0O2_vs_NR_O2), adjust = "holm")
+#   res_NR0O2_vs_NR_O2 <- transform(as.data.frame(res_NR0O2_vs_NR_O2), Sex = sx)
+#   write.csv(res_NR0O2_vs_NR_O2,
+#             file.path(outdir, paste0("SPEC_O2_NR0_vs_NR1to6_in_Order2_Sex", sx, ".csv")),
+#             row.names = FALSE)
+#   all_NR0_vs_NRO2[[sx]] <- res_NR0O2_vs_NR_O2
+
+#   # 3a) Matched-day: PRk (Order 2, Sex = sx) vs NRk (Order 1, Sex = sx)
+#   cts_O2PRk_vs_O1NRk <- setNames(lapply(0:6, function(d)
+#     mkL4(em, c("PR", as.character(d), "2", sx),
+#              c("NR", as.character(d), "1", sx))),
+#     paste0("PR", 0:6, " Order2 Sex", sx, " - NR", 0:6, " Order1 Sex", sx)
+#   )
+#   res_O2PRk_vs_O1NRk <- summary(contrast(em, cts_O2PRk_vs_O1NRk), adjust = "holm")
+#   res_O2PRk_vs_O1NRk <- transform(as.data.frame(res_O2PRk_vs_O1NRk), Sex = sx)
+#   write.csv(res_O2PRk_vs_O1NRk,
+#             file.path(outdir, paste0("SPEC_O2_PRk_vs_O1_NRk_matched_days_Sex", sx, ".csv")),
+#             row.names = FALSE)
+#   all_PRk_vs_NRk[[sx]] <- res_O2PRk_vs_O1NRk
+
+#   # 3b) Matched-day: NRk (Order 2, Sex = sx) vs PRk (Order 1, Sex = sx)
+#   cts_O2NRk_vs_O1PRk <- setNames(lapply(0:6, function(d)
+#     mkL4(em, c("NR", as.character(d), "2", sx),
+#              c("PR", as.character(d), "1", sx))),
+#     paste0("NR", 0:6, " Order2 Sex", sx, " - PR", 0:6, " Order1 Sex", sx)
+#   )
+#   res_O2NRk_vs_O1PRk <- summary(contrast(em, cts_O2NRk_vs_O1PRk), adjust = "holm")
+#   res_O2NRk_vs_O1PRk <- transform(as.data.frame(res_O2NRk_vs_O1PRk), Sex = sx)
+#   write.csv(res_O2NRk_vs_O1PRk,
+#             file.path(outdir, paste0("SPEC_O2_NRk_vs_O1_PRk_matched_days_Sex", sx, ".csv")),
+#             row.names = FALSE)
+#   all_NRk_vs_PRk[[sx]] <- res_O2NRk_vs_O1PRk
+
+  
+# }
+
+# # If you also want combined tables across both sexes (each row has a Sex column), uncomment:
+# # write.csv(bind_rows(all_PR0_vs_allO2), file.path(outdir, "SPEC_O2_PR0_vs_all_Order2_days_ALL_SEX.csv"), row.names = FALSE)
+# # write.csv(bind_rows(all_NR0_vs_NRO2), file.path(outdir, "SPEC_O2_NR0_vs_NR1to6_in_Order2_ALL_SEX.csv"), row.names = FALSE)
+# # write.csv(bind_rows(all_PRk_vs_NRk),  file.path(outdir, "SPEC_O2_PRk_vs_O1_NRk_matched_days_ALL_SEX.csv"), row.names = FALSE)
+# # write.csv(bind_rows(all_NRk_vs_PRk),  file.path(outdir, "SPEC_O2_NRk_vs_O1_PRk_matched_days_ALL_SEX.csv"), row.names = FALSE)
+
+# # === ALL pairwise comparisons across phase × day × Order × Sex =================
+# em_cells <- emmeans(fit, ~ phase:day:Order:Sex)  # each combo as one level
+
+# all_pairs_holm  <- summary(pairs(em_cells, adjust = "holm"))
+# all_pairs_tukey <- summary(pairs(em_cells, adjust = "tukey"))
+
+# # Prettify the contrast labels to look like "PR0 Order1 SexM - NR3 Order2 SexF" (if ever cross-sex)
+# prettify_contrasts4 <- function(df) {
+#   df <- as.data.frame(df)
+#   lr <- strsplit(df$contrast, " - ", fixed = TRUE)
+
+#   pattern <- "phase\\s*=?\\s*(NR|PR).*day\\s*=?\\s*X?([0-9]+).*Order\\s*=?\\s*([12]).*Sex\\s*=?\\s*([MF])"
+
+#   grab <- function(x) {
+#     utils::strcapture(
+#       pattern = pattern,
+#       x = x,
+#       proto = data.frame(phase = character(), day = character(), Order = character(), Sex = character(),
+#                          stringsAsFactors = FALSE)
+#     )
+#   }
+
+#   L <- do.call(rbind, lapply(lr, function(z) grab(z[1])))
+#   R <- do.call(rbind, lapply(lr, function(z) grab(z[2])))
+
+#   df$contrast_pretty <- paste0(L$phase, L$day, " Order", L$Order, " Sex", L$Sex,
+#                                " - ",
+#                                R$phase, R$day, " Order", R$Order, " Sex", R$Sex)
+#   df
+# }
+
+# all_pairs_holm_df  <- prettify_contrasts4(all_pairs_holm)
+# all_pairs_tukey_df <- prettify_contrasts4(all_pairs_tukey)
+
+# write.csv(all_pairs_holm_df,
+#           file.path(outdir, "ALL_pairwise_phase_day_Order_Sex_HOLM.csv"),
+#           row.names = FALSE)
+# write.csv(all_pairs_tukey_df,
+#           file.path(outdir, "ALL_pairwise_phase_day_Order_Sex_TUKEY.csv"),
+#           row.names = FALSE)
+
+
+
+
+
+#####################################################################################BODYWEIGHT RE DO WITH POSTHOC NR0 for Order 1 and PR0 for Order2##################
+#################################################################################################################################################################
+
+
 # --- Packages & options ---
 library(tidyverse)
 library(afex)
@@ -2928,7 +3198,7 @@ library(broom)
 afex::afex_options(type = 3)                  # Type-III SS
 options(contrasts = c("contr.sum","contr.poly"))
 
-# --- Paths   ---
+# --- Paths ---
 infile <- "C:/Users/hta031/Github/FEDProtein/results/FIVE/LINE_PLOTS/Bodyweight/BODYWEIGHT.csv"
 outdir <- "C:/Users/hta031/Github/FEDProtein/results/FIVE/LINE_PLOTS/Bodyweight/RE_DO_BODYWEIGHT"
 infile <- trimws(infile); outdir <- trimws(outdir)
@@ -2961,7 +3231,9 @@ descriptive <- long %>%
             mean = mean(value, na.rm = TRUE),
             sd   = sd(value, na.rm = TRUE),
             .groups = "drop")
-write.csv(descriptive, file.path(outdir, "Bodyweight_descriptives_by_Order_Sex_phase_day.csv"), row.names = FALSE)
+write.csv(descriptive,
+          file.path(outdir, "Bodyweight_descriptives_by_Order_Sex_phase_day.csv"),
+          row.names = FALSE)
 
 # --- Repeated-measures ANOVA (Sex included) ---
 fit <- aov_ez(
@@ -2983,7 +3255,7 @@ grid <- as.data.frame(em)[, c("phase","day","Order","Sex")]
 write.csv(grid, file.path(outdir, "EMM_grid_Bodyweight_with_Sex.csv"), row.names = FALSE)
 
 # --- Helper to build a contrast vector A - B (robust to 'X' in day labels) ---
-# A, B are c(phase, day, Order, Sex) with day like "0","1","2", Sex like "M"/"F"
+# A, B are c(phase, day, Order, Sex) with day like "0","1","2"; Sex like "M"/"F"
 mkL4 <- function(em, A, B) {
   g <- as.data.frame(em)[, c("phase","day","Order","Sex")]
   g <- data.frame(lapply(g, function(x) trimws(as.character(x))), stringsAsFactors = FALSE)
@@ -3002,25 +3274,51 @@ mkL4 <- function(em, A, B) {
   L <- rep(0, nrow(g)); L[iA] <- 1; L[iB] <- -1; L
 }
 
-# --- SPECIFIC CONTRASTS (Holm-adjusted), computed PER SEX -------------------------------------------------------
+# --- Label formatter for contrasts ---
 fmt <- function(phase, day, ord, sex) sprintf("%s%s Order%s Sex%s", phase, day, ord, sex)
 
+# --- SPECIFIC CONTRASTS (Holm-adjusted), computed PER SEX -------------------------------------------------------
 sex_levels <- levels(long$Sex)  # typically c("M","F")
 
-# Containers to optionally bind results across sexes (if you want single files later)
-all_PR0_vs_allO2  <- list()
-all_NR0_vs_NRO2   <- list()
-all_PRk_vs_NRk    <- list()
-all_NRk_vs_PRk    <- list()
+# (optional) containers to bind across sexes later
+all_O1_NR0_vs_allO1 <- list()
+all_O2_PR0_vs_allO2 <- list()
+all_O2_NR0_vs_NRO2  <- list()
+all_PRk_vs_NRk      <- list()
+all_NRk_vs_PRk      <- list()
 
 for (sx in sex_levels) {
 
+  # 0) *** NEW FEATURE *** NR0 (Order 1, Sex = sx) vs every other day in Order 1, Sex = sx
+  #     -> NR0 vs PR0..PR6  and  NR0 vs NR1..NR6
+  cts_NR0O1_vs_allO1 <- list()
+
+  # NR0 vs PR0..PR6 (cross to PR within Order 1)
+  for (d in 0:6) {
+    name <- paste(fmt("NR","0","1", sx), "-", fmt("PR", as.character(d), "1", sx))
+    cts_NR0O1_vs_allO1[[name]] <- mkL4(em, c("NR","0","1", sx), c("PR", as.character(d), "1", sx))
+  }
+  # NR0 vs NR1..NR6 (within NR in Order 1)
+  for (d in 1:6) {
+    name <- paste(fmt("NR","0","1", sx), "-", fmt("NR", as.character(d), "1", sx))
+    cts_NR0O1_vs_allO1[[name]] <- mkL4(em, c("NR","0","1", sx), c("NR", as.character(d), "1", sx))
+  }
+
+  res_NR0O1_vs_allO1 <- summary(contrast(em, cts_NR0O1_vs_allO1), adjust = "holm")
+  res_NR0O1_vs_allO1 <- transform(as.data.frame(res_NR0O1_vs_allO1), Sex = sx)
+  write.csv(res_NR0O1_vs_allO1,
+            file.path(outdir, paste0("SPEC_O1_NR0_vs_all_Order1_days_Sex", sx, ".csv")),
+            row.names = FALSE)
+  all_O1_NR0_vs_allO1[[sx]] <- res_NR0O1_vs_allO1
+
   # 1) PR0 (Order 2, Sex = sx) vs every other day in Order 2, Sex = sx
   cts_PR0O2_vs_allO2 <- list()
+  # PR0 vs PR1..PR6
   for (d in 1:6) {
     name <- paste(fmt("PR","0","2", sx), "-", fmt("PR", as.character(d), "2", sx))
     cts_PR0O2_vs_allO2[[name]] <- mkL4(em, c("PR","0","2", sx), c("PR", as.character(d), "2", sx))
   }
+  # PR0 vs NR0..NR6
   for (d in 0:6) {
     name <- paste(fmt("PR","0","2", sx), "-", fmt("NR", as.character(d), "2", sx))
     cts_PR0O2_vs_allO2[[name]] <- mkL4(em, c("PR","0","2", sx), c("NR", as.character(d), "2", sx))
@@ -3030,27 +3328,31 @@ for (sx in sex_levels) {
   write.csv(res_PR0O2_vs_allO2,
             file.path(outdir, paste0("SPEC_O2_PR0_vs_all_Order2_days_Sex", sx, ".csv")),
             row.names = FALSE)
-  all_PR0_vs_allO2[[sx]] <- res_PR0O2_vs_allO2
+  all_O2_PR0_vs_allO2[[sx]] <- res_PR0O2_vs_allO2
 
   # 2) NR0 (Order 2, Sex = sx) vs NR1..NR6 in Order 2, Sex = sx
-  cts_NR0O2_vs_NR_O2 <- setNames(lapply(1:6, function(d)
-    mkL4(em, c("NR","0","2", sx), c("NR", as.character(d), "2", sx))),
-    paste0(fmt("NR","0","2", sx), " - ", fmt("NR","", "2", sx)) # label updated below
-  )
-  names(cts_NR0O2_vs_NR_O2) <- paste(fmt("NR","0","2", sx), "-", paste0("NR", 1:6, " Order2 Sex", sx))
+  cts_NR0O2_vs_NR_O2 <- setNames(vector("list", 6),
+                                 paste(fmt("NR","0","2", sx),
+                                       "-",
+                                       paste0("NR", 1:6, " Order2 Sex", sx)))
+  for (d in 1:6) {
+    cts_NR0O2_vs_NR_O2[[d]] <- mkL4(em, c("NR","0","2", sx), c("NR", as.character(d), "2", sx))
+  }
   res_NR0O2_vs_NR_O2 <- summary(contrast(em, cts_NR0O2_vs_NR_O2), adjust = "holm")
   res_NR0O2_vs_NR_O2 <- transform(as.data.frame(res_NR0O2_vs_NR_O2), Sex = sx)
   write.csv(res_NR0O2_vs_NR_O2,
             file.path(outdir, paste0("SPEC_O2_NR0_vs_NR1to6_in_Order2_Sex", sx, ".csv")),
             row.names = FALSE)
-  all_NR0_vs_NRO2[[sx]] <- res_NR0O2_vs_NR_O2
+  all_O2_NR0_vs_NRO2[[sx]] <- res_NR0O2_vs_NR_O2
 
   # 3a) Matched-day: PRk (Order 2, Sex = sx) vs NRk (Order 1, Sex = sx)
-  cts_O2PRk_vs_O1NRk <- setNames(lapply(0:6, function(d)
-    mkL4(em, c("PR", as.character(d), "2", sx),
-             c("NR", as.character(d), "1", sx))),
-    paste0("PR", 0:6, " Order2 Sex", sx, " - NR", 0:6, " Order1 Sex", sx)
-  )
+  cts_O2PRk_vs_O1NRk <- setNames(vector("list", 7),
+                                 paste0("PR", 0:6, " Order2 Sex", sx,
+                                        " - NR", 0:6, " Order1 Sex", sx))
+  for (d in 0:6) {
+    cts_O2PRk_vs_O1NRk[[d+1]] <- mkL4(em, c("PR", as.character(d), "2", sx),
+                                          c("NR", as.character(d), "1", sx))
+  }
   res_O2PRk_vs_O1NRk <- summary(contrast(em, cts_O2PRk_vs_O1NRk), adjust = "holm")
   res_O2PRk_vs_O1NRk <- transform(as.data.frame(res_O2PRk_vs_O1NRk), Sex = sx)
   write.csv(res_O2PRk_vs_O1NRk,
@@ -3059,11 +3361,13 @@ for (sx in sex_levels) {
   all_PRk_vs_NRk[[sx]] <- res_O2PRk_vs_O1NRk
 
   # 3b) Matched-day: NRk (Order 2, Sex = sx) vs PRk (Order 1, Sex = sx)
-  cts_O2NRk_vs_O1PRk <- setNames(lapply(0:6, function(d)
-    mkL4(em, c("NR", as.character(d), "2", sx),
-             c("PR", as.character(d), "1", sx))),
-    paste0("NR", 0:6, " Order2 Sex", sx, " - PR", 0:6, " Order1 Sex", sx)
-  )
+  cts_O2NRk_vs_O1PRk <- setNames(vector("list", 7),
+                                 paste0("NR", 0:6, " Order2 Sex", sx,
+                                        " - PR", 0:6, " Order1 Sex", sx))
+  for (d in 0:6) {
+    cts_O2NRk_vs_O1PRk[[d+1]] <- mkL4(em, c("NR", as.character(d), "2", sx),
+                                          c("PR", as.character(d), "1", sx))
+  }
   res_O2NRk_vs_O1PRk <- summary(contrast(em, cts_O2NRk_vs_O1PRk), adjust = "holm")
   res_O2NRk_vs_O1PRk <- transform(as.data.frame(res_O2NRk_vs_O1PRk), Sex = sx)
   write.csv(res_O2NRk_vs_O1PRk,
@@ -3073,10 +3377,11 @@ for (sx in sex_levels) {
 }
 
 # If you also want combined tables across both sexes (each row has a Sex column), uncomment:
-# write.csv(bind_rows(all_PR0_vs_allO2), file.path(outdir, "SPEC_O2_PR0_vs_all_Order2_days_ALL_SEX.csv"), row.names = FALSE)
-# write.csv(bind_rows(all_NR0_vs_NRO2), file.path(outdir, "SPEC_O2_NR0_vs_NR1to6_in_Order2_ALL_SEX.csv"), row.names = FALSE)
-# write.csv(bind_rows(all_PRk_vs_NRk),  file.path(outdir, "SPEC_O2_PRk_vs_O1_NRk_matched_days_ALL_SEX.csv"), row.names = FALSE)
-# write.csv(bind_rows(all_NRk_vs_PRk),  file.path(outdir, "SPEC_O2_NRk_vs_O1_PRk_matched_days_ALL_SEX.csv"), row.names = FALSE)
+# write.csv(bind_rows(all_O1_NR0_vs_allO1), file.path(outdir, "SPEC_O1_NR0_vs_all_Order1_days_ALL_SEX.csv"), row.names = FALSE)
+# write.csv(bind_rows(all_O2_PR0_vs_allO2), file.path(outdir, "SPEC_O2_PR0_vs_all_Order2_days_ALL_SEX.csv"), row.names = FALSE)
+# write.csv(bind_rows(all_O2_NR0_vs_NRO2), file.path(outdir, "SPEC_O2_NR0_vs_NR1to6_in_Order2_ALL_SEX.csv"), row.names = FALSE)
+# write.csv(bind_rows(all_PRk_vs_NRk),      file.path(outdir, "SPEC_O2_PRk_vs_O1_NRk_matched_days_ALL_SEX.csv"), row.names = FALSE)
+# write.csv(bind_rows(all_NRk_vs_PRk),      file.path(outdir, "SPEC_O2_NRk_vs_O1_PRk_matched_days_ALL_SEX.csv"), row.names = FALSE)
 
 # === ALL pairwise comparisons across phase × day × Order × Sex =================
 em_cells <- emmeans(fit, ~ phase:day:Order:Sex)  # each combo as one level
@@ -3118,6 +3423,10 @@ write.csv(all_pairs_holm_df,
 write.csv(all_pairs_tukey_df,
           file.path(outdir, "ALL_pairwise_phase_day_Order_Sex_TUKEY.csv"),
           row.names = FALSE)
+
+
+
+
 
 
 
