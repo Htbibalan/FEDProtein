@@ -4289,3 +4289,220 @@ posthoc_holm_df <- as.data.frame(summary(posthoc_holm$contrasts))
 write.csv(posthoc_holm_df, "C:\\Users\\hta031\\Github\\FEDProtein\\results\\FIVE\\LINE_PLOTS\\Hoarding\\h_trend_posthoc_holm_results.csv")
 
 
+
+
+
+
+
+###############################################################################################################################################################################
+#####################################################################  HOARDING RE_DO#########################################################################################
+
+
+# --- Packages & options ---
+library(tidyverse)
+library(afex)
+library(emmeans)
+library(broom)
+
+afex::afex_options(type = 3)                  # Type-III SS
+options(contrasts = c("contr.sum","contr.poly"))
+
+# --- Paths   ---
+infile <- "C:/Users/hta031/Github/FEDProtein/results/FIVE/LINE_PLOTS/Hoarding/HOARDING.csv"
+outdir <- "C:/Users/hta031/Github/FEDProtein/results/FIVE/LINE_PLOTS/Hoarding/RE_DO"
+infile <- trimws(infile); outdir <- trimws(outdir)
+if (!dir.exists(outdir)) dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
+
+# --- Load & reshape (NR/PR + day parsed cleanly) ---
+dat <- read.csv(infile)
+
+long <- dat %>%
+  pivot_longer(
+    cols = matches("^(NR|PR)\\d+$"),
+    names_to        = c("phase","day"),
+    names_pattern   = "(NR|PR)(\\d+)",
+    names_transform = list(day = as.integer),
+    values_to       = "value"
+  ) %>%
+  mutate(
+    day   = factor(day, levels = sort(unique(day))),   # categorical for RM design
+    phase = factor(phase, levels = c("NR","PR")),
+    Order = factor(Order),
+    Sex   = factor(Sex),
+    Mouse = factor(Mouse)
+  ) %>%
+  drop_na(value)
+
+# --- Descriptives per (Order × phase × day) ---
+descriptive <- long %>%
+  group_by(Order, phase, day) %>%
+  summarise(n = sum(!is.na(value)),
+            mean = mean(value, na.rm = TRUE),
+            sd   = sd(value, na.rm = TRUE),
+            .groups = "drop")
+write.csv(descriptive, file.path(outdir, "COMBINE_Hoarding_descriptives.csv"), row.names = FALSE)
+
+# --- Repeated-measures ANOVA ---
+include_sex <- FALSE
+between_fml <- if (include_sex) c("Order","Sex") else "Order"
+
+fit <- aov_ez(
+  id      = "Mouse",
+  dv      = "value",
+  within  = c("phase","day"),
+  between = between_fml,
+  data    = long
+)
+
+anova_tab <- afex::nice(fit, es = "pes", correction = "GG")
+write.csv(anova_tab, file.path(outdir, "COMBINE_Hoarding_ANOVA_GG.csv"), row.names = FALSE)
+
+# --- EMMs for all cells (phase × day × Order) ---
+em <- emmeans(fit, ~ phase*day*Order)
+
+# Save the grid (helps inspect labels; day may appear as X0..X6)
+grid <- as.data.frame(em)[, c("phase","day","Order")]
+write.csv(grid, file.path(outdir, "EMM_grid_Pellets.csv"), row.names = FALSE)
+
+# --- Helper to build a contrast vector A - B (robust to 'X' in day labels) ---
+# A, B are c(phase, day, Order) with day like "0","1","2"
+mkL <- function(em, A, B) {
+  g <- as.data.frame(em)[, c("phase","day","Order")]
+  g <- data.frame(lapply(g, function(x) trimws(as.character(x))), stringsAsFactors = FALSE)
+  names(g) <- c("phase","day","Order")
+  g$day_plain <- sub("^X", "", g$day)  # strip leading 'X' if present
+
+  iA <- which(g$phase==A[1] & g$day_plain==A[2] & g$Order==A[3])
+  iB <- which(g$phase==B[1] & g$day_plain==B[2] & g$Order==B[3])
+
+  if (length(iA)!=1 || length(iB)!=1) {
+    message("Could not find requested cells. First rows of the EMM grid:")
+    print(utils::head(g, 12))
+    stop(sprintf("Can't find cells:\n  A = %s\n  B = %s",
+                 paste(A, collapse=","), paste(B, collapse=",")))
+  }
+  L <- rep(0, nrow(g)); L[iA] <- 1; L[iB] <- -1; L
+}
+
+# --- SPECIFIC CONTRASTS (Holm-adjusted) --------------------------------------
+
+# Helper to format readable labels like "PR0 Order2"
+fmt <- function(phase, day, ord) sprintf("%s%s Order%s", phase, day, ord)
+
+# 1) PR0 (Order 2) vs every other day in Order 2
+#    -> PR0 vs PR1..PR6 and PR0 vs NR0..NR6
+cts_PR0O2_vs_allO2 <- list()
+# PR0 vs PR1..PR6 (within PR phase)
+for (d in 1:6) {
+  name <- paste(fmt("PR","0","2"), "-", fmt("PR", as.character(d), "2"))
+  cts_PR0O2_vs_allO2[[name]] <- mkL(em, c("PR","0","2"), c("PR", as.character(d), "2"))
+}
+# PR0 vs NR0..NR6 (across to NR phase)
+for (d in 0:6) {
+  name <- paste(fmt("PR","0","2"), "-", fmt("NR", as.character(d), "2"))
+  cts_PR0O2_vs_allO2[[name]] <- mkL(em, c("PR","0","2"), c("NR", as.character(d), "2"))
+}
+
+res_PR0O2_vs_allO2 <- summary(contrast(em, cts_PR0O2_vs_allO2), adjust = "holm")
+write.csv(as.data.frame(res_PR0O2_vs_allO2),
+          file.path(outdir, "SPEC_O2_PR0_vs_all_Order2_days.csv"),
+          row.names = FALSE)
+
+# 2) NR0 (Order 2) vs every other NR day in Order 2
+#    -> NR0 vs NR1..NR6
+cts_NR0O2_vs_NR_O2 <- list()
+for (d in 1:6) {
+  name <- paste(fmt("NR","0","2"), "-", fmt("NR", as.character(d), "2"))
+  cts_NR0O2_vs_NR_O2[[name]] <- mkL(em, c("NR","0","2"), c("NR", as.character(d), "2"))
+}
+
+res_NR0O2_vs_NR_O2 <- summary(contrast(em, cts_NR0O2_vs_NR_O2), adjust = "holm")
+write.csv(as.data.frame(res_NR0O2_vs_NR_O2),
+          file.path(outdir, "SPEC_O2_NR0_vs_NR1to6_in_Order2.csv"),
+          row.names = FALSE)
+
+# 3) Matched-day cross-order, cross-phase contrasts
+#    a) PRk (Order 2) vs NRk (Order 1), for k = 0..6
+#    b) NRk (Order 2) vs PRk (Order 1), for k = 0..6
+cts_O2PRk_vs_O1NRk <- list()
+for (d in 0:6) {
+  name <- paste(fmt("PR", as.character(d), "2"), "-", fmt("NR", as.character(d), "1"))
+  cts_O2PRk_vs_O1NRk[[name]] <- mkL(em, c("PR", as.character(d), "2"),
+                                         c("NR", as.character(d), "1"))
+}
+res_O2PRk_vs_O1NRk <- summary(contrast(em, cts_O2PRk_vs_O1NRk), adjust = "holm")
+write.csv(as.data.frame(res_O2PRk_vs_O1NRk),
+          file.path(outdir, "SPEC_O2_PRk_vs_O1_NRk_matched_days.csv"),
+          row.names = FALSE)
+
+cts_O2NRk_vs_O1PRk <- list()
+for (d in 0:6) {
+  name <- paste(fmt("NR", as.character(d), "2"), "-", fmt("PR", as.character(d), "1"))
+  cts_O2NRk_vs_O1PRk[[name]] <- mkL(em, c("NR", as.character(d), "2"),
+                                         c("PR", as.character(d), "1"))
+}
+res_O2NRk_vs_O1PRk <- summary(contrast(em, cts_O2NRk_vs_O1PRk), adjust = "holm")
+write.csv(as.data.frame(res_O2NRk_vs_O1PRk),
+          file.path(outdir, "SPEC_O2_NRk_vs_O1_PRk_matched_days.csv"),
+          row.names = FALSE)
+# 4) NR0 (Order 1) vs every other day in Order 1
+#    -> NR0 vs PR0..PR6  and  NR0 vs NR1..NR6
+cts_NR0O1_vs_allO1 <- list()
+
+# NR0 vs PR0..PR6 (across to PR phase within Order 1)
+for (d in 0:6) {
+  name <- paste(fmt("NR","0","1"), "-", fmt("PR", as.character(d), "1"))
+  cts_NR0O1_vs_allO1[[name]] <- mkL(em, c("NR","0","1"), c("PR", as.character(d), "1"))
+}
+
+# NR0 vs NR1..NR6 (within NR phase, skip NR0 vs NR0)
+for (d in 1:6) {
+  name <- paste(fmt("NR","0","1"), "-", fmt("NR", as.character(d), "1"))
+  cts_NR0O1_vs_allO1[[name]] <- mkL(em, c("NR","0","1"), c("NR", as.character(d), "1"))
+}
+
+res_NR0O1_vs_allO1 <- summary(contrast(em, cts_NR0O1_vs_allO1), adjust = "holm")
+write.csv(as.data.frame(res_NR0O1_vs_allO1),
+          file.path(outdir, "SPEC_O1_NR0_vs_all_Order1_days.csv"),
+          row.names = FALSE)
+
+# === ALL pairwise comparisons across phase × day × Order (28 cells → 378 tests) ===
+em_cells <- emmeans(fit, ~ phase:day:Order)  # each combo as one level
+
+all_pairs_holm  <- summary(pairs(em_cells, adjust = "holm"))
+all_pairs_tukey <- summary(pairs(em_cells, adjust = "tukey"))
+
+# Prettify the contrast labels to look like "PR0 Order1 - NR3 Order2"
+prettify_contrasts <- function(df) {
+  df <- as.data.frame(df)
+  lr <- strsplit(df$contrast, " - ", fixed = TRUE)
+
+  pattern <- "phase\\s*=?\\s*(NR|PR).*day\\s*=?\\s*X?([0-9]+).*Order\\s*=?\\s*([12])"
+
+  grab <- function(x) {
+    utils::strcapture(
+      pattern = pattern,
+      x = x,
+      proto = data.frame(phase = character(), day = character(), Order = character(),
+                         stringsAsFactors = FALSE)
+    )
+  }
+
+  L <- do.call(rbind, lapply(lr, function(z) grab(z[1])))
+  R <- do.call(rbind, lapply(lr, function(z) grab(z[2])))
+
+  df$contrast_pretty <- paste0(L$phase, L$day, " Order", L$Order,
+                               " - ",
+                               R$phase, R$day, " Order", R$Order)
+  df
+}
+
+all_pairs_holm_df  <- prettify_contrasts(all_pairs_holm)
+all_pairs_tukey_df <- prettify_contrasts(all_pairs_tukey)
+
+write.csv(all_pairs_holm_df,
+          file.path(outdir, "ALL_pairwise_phase_day_Order_HOLM.csv"),
+          row.names = FALSE)
+write.csv(all_pairs_tukey_df,
+          file.path(outdir, "ALL_pairwise_phase_day_Order_TUKEY.csv"),
+          row.names = FALSE)
