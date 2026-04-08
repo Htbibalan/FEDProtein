@@ -181,3 +181,5 @@ cython_debug/
 .cursorindexingignore# pixi environments
 .pixi/*
 !.pixi/config.toml
+
+plots/*.pdf
